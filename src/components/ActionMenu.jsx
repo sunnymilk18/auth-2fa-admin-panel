@@ -1,7 +1,12 @@
-import { useEffect, useRef, useState } from 'react';
+import { Fragment, useEffect, useRef, useState } from 'react';
 
 const ITEM_HEIGHT = 38;
 const MENU_PADDING = 8;
+const DIVIDER_HEIGHT = 9;
+
+// Una línea separa el primer ítem de peligro del resto: marca dónde empiezan
+// las acciones que debilitan o borran algo.
+const startsDangerGroup = (item, i, all) => item.danger && i > 0 && !all[i - 1].danger;
 
 // Menú de acciones de una fila. Se posiciona con `fixed` a partir del botón
 // porque la tabla vive en un contenedor con scroll horizontal, que recortaría
@@ -23,7 +28,8 @@ export function ActionMenu({ label = 'Más acciones', items, disabled }) {
       return;
     }
     const rect = buttonRef.current.getBoundingClientRect();
-    const menuHeight = items.length * ITEM_HEIGHT + MENU_PADDING;
+    const menuHeight =
+      items.length * ITEM_HEIGHT + items.filter(startsDangerGroup).length * DIVIDER_HEIGHT + MENU_PADDING;
     // Si no cabe debajo del botón, se abre hacia arriba.
     const fitsBelow = rect.bottom + 4 + menuHeight <= window.innerHeight;
     setPos({
@@ -86,19 +92,21 @@ export function ActionMenu({ label = 'Más acciones', items, disabled }) {
       </button>
       {open && (
         <div ref={menuRef} className="menu" role="menu" style={{ top: pos.top, right: pos.right }}>
-          {items.map((item) => (
-            <button
-              key={item.label}
-              type="button"
-              role="menuitem"
-              className={`menu-item${item.danger ? ' menu-item--danger' : ''}`}
-              onClick={() => {
-                close();
-                item.onSelect();
-              }}
-            >
-              {item.label}
-            </button>
+          {items.map((item, i) => (
+            <Fragment key={item.label}>
+              {startsDangerGroup(item, i, items) && <div className="menu-divider" role="separator" />}
+              <button
+                type="button"
+                role="menuitem"
+                className={`menu-item${item.danger ? ' menu-item--danger' : ''}`}
+                onClick={() => {
+                  close();
+                  item.onSelect();
+                }}
+              >
+                {item.label}
+              </button>
+            </Fragment>
           ))}
         </div>
       )}

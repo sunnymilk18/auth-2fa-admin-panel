@@ -72,11 +72,13 @@ Plan de 7 pasos acordado con el usuario:
    notificaciones tipo "toast". El bug de la pantalla negra está resuelto
    (ver abajo) y el usuario confirmó que el flujo completo de
    "Desactivar" y "Rotar key" funciona.
-4. Página de Users — **en curso, primera versión hecha**: listado
-   paginado (25 por página) con búsqueda, banear/desbanear y revocar
-   sesiones. Faltan, de a poco: desactivar TOTP, resetear PIN, cambiar
-   correo, exigir PIN al iniciar sesión, ver/limpiar bloqueos y una
-   columna con el tenant del usuario.
+4. Página de Users — **casi terminada**: listado paginado (25 por
+   página) con búsqueda, banear/desbanear y un menú "Más acciones" con
+   ver/limpiar bloqueos, exigir PIN al iniciar sesión, revocar sesiones,
+   desactivar TOTP y resetear PIN. Faltan solo, dejados para un lote
+   aparte: cambiar el correo (necesita un campo de texto y afecta el
+   inicio de sesión) y una columna con el tenant del usuario (hoy la API
+   solo da el UUID; habría que cruzarlo con la lista de clients).
 5. Página de Blacklist — no empezada.
 6. Página de Accounts (gestión de admins/superadmins) — no empezada.
 7. Logout — ya funciona desde el `AppShell`, falta confirmación final.
@@ -85,11 +87,9 @@ Todo lo anterior está pusheado a `origin/master`. Pedir confirmación
 explícita ("sí"/"súbelo") antes de cualquier commit/push, igual que se
 hace en el repo del backend.
 
-Pendiente de seguridad: las credenciales del admin de prueba quedaron en
-el historial del repo (commit `67dede4`). El repo es privado, así que se
-decidió no reescribir el historial; hay que rotar ese admin de prueba
-(en el repo del backend) antes de exponer el backend fuera de la máquina
-local o de dar acceso al repo a más personas.
+Las credenciales del admin de prueba están en el historial del repo (commit
+`67dede4`), pero es solo un usuario de prueba local y el usuario decidió que
+no hace falta rotarlo ni limpiar el historial. No volver a plantearlo.
 
 ## Bug resuelto: pantalla negra al desactivar/rotar en ClientsPage
 

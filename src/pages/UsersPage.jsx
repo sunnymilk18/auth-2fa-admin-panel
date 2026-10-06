@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { AppShell } from '../components/AppShell';
 import { ActionMenu } from '../components/ActionMenu';
+import { LockoutsDialog } from '../components/LockoutsDialog';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { useToast } from '../components/ToastProvider';
 import { api } from '../api';
@@ -25,6 +26,8 @@ export function UsersPage() {
   const [highlightID, setHighlightID] = useState(null);
   // Acción pendiente de confirmar: { title, message, danger, confirmLabel, run }.
   const [confirming, setConfirming] = useState(null);
+  // Usuario cuyo diálogo de bloqueos está abierto.
+  const [lockoutsFor, setLockoutsFor] = useState(null);
 
   // Si el usuario cambia de página o busca mientras una petición sigue en
   // vuelo, solo vale la respuesta de la última.
@@ -108,7 +111,20 @@ export function UsersPage() {
   }
 
   function menuItems(user) {
+    const pinRequired = user.pin_required_at_login;
     return [
+      { label: 'Ver bloqueos', onSelect: () => setLockoutsFor(user) },
+      {
+        label: pinRequired ? 'Dejar de exigir PIN' : 'Exigir PIN al iniciar sesión',
+        onSelect: () =>
+          runAction(user, {
+            call: (id) => api.setUserLoginPinRequired(id, !pinRequired),
+            success: pinRequired
+              ? `"${user.email}" ya no necesita PIN para iniciar sesión.`
+              : `"${user.email}" ahora necesita PIN para iniciar sesión.`,
+            failure: `No se pudo cambiar el PIN de inicio de sesión de "${user.email}".`,
+          }),
+      },
       {
         // Reversible (el usuario vuelve a iniciar sesión): no es "peligro".
         label: 'Revocar sesiones',
@@ -246,6 +262,8 @@ export function UsersPage() {
           </nav>
         </>
       )}
+
+      {lockoutsFor && <LockoutsDialog user={lockoutsFor} onClose={() => setLockoutsFor(null)} />}
 
       <ConfirmDialog
         open={Boolean(confirming)}

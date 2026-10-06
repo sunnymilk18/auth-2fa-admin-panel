@@ -76,6 +76,13 @@ export const api = {
   },
   banUser: (id) => request(`/admin/users/${encodeURIComponent(id)}/ban`, { method: 'POST' }),
   unbanUser: (id) => request(`/admin/users/${encodeURIComponent(id)}/unban`, { method: 'POST' }),
+  // { login: { locked, retry_after_seconds }, pin: { ... } }
+  getUserLockouts: (id) => request(`/admin/users/${encodeURIComponent(id)}/lockouts`),
+  // which: 'login' | 'pin' | 'all'
+  clearUserLockouts: (id, which = 'all') =>
+    request(`/admin/users/${encodeURIComponent(id)}/clear-lockouts`, { method: 'POST', body: { which } }),
+  setUserLoginPinRequired: (id, required) =>
+    request(`/admin/users/${encodeURIComponent(id)}/login-pin-required`, { method: 'PUT', body: { required } }),
   disableUserTotp: (id) => request(`/admin/users/${encodeURIComponent(id)}/disable-totp`, { method: 'POST' }),
   resetUserPin: (id) => request(`/admin/users/${encodeURIComponent(id)}/reset-pin`, { method: 'POST' }),
   revokeUserSessions: (id) => request(`/admin/users/${encodeURIComponent(id)}/revoke-sessions`, { method: 'POST' }),

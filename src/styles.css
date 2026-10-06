@@ -434,6 +434,9 @@ a {
   border-radius: 999px;
   margin-right: 7px;
 }
+.status-dot--bad {
+  background: var(--danger);
+}
 .status-dot--ok {
   background: var(--admin);
 }
@@ -505,6 +508,30 @@ a {
   }
 }
 
+/* --- Diálogo de bloqueos ------------------------------------------------ */
+.dialog .dialog-subject {
+  margin-top: -4px;
+  overflow-wrap: anywhere;
+}
+.lockout-list {
+  list-style: none;
+  margin: 16px 0 0;
+  padding: 0;
+  border-top: 1px solid var(--border);
+}
+.lockout-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+.lockout-list .lockout-state {
+  color: var(--text-dim);
+}
+
 /* --- Menú de acciones de una fila ---------------------------------------- */
 .menu {
   position: fixed;
@@ -533,6 +560,11 @@ a {
 .menu-item:focus-visible {
   background: var(--surface);
   outline: none;
+}
+.menu-divider {
+  height: 1px;
+  margin: 4px 6px;
+  background: var(--border);
 }
 .menu-item--danger {
   color: var(--danger);
