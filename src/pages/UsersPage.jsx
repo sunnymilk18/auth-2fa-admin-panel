@@ -3,6 +3,7 @@ import { AppShell } from '../components/AppShell';
 import { ActionMenu } from '../components/ActionMenu';
 import { LockoutsDialog } from '../components/LockoutsDialog';
 import { ConfirmDialog } from '../components/ConfirmDialog';
+import { useAuth } from '../auth/AuthContext';
 import { useToast } from '../components/ToastProvider';
 import { api } from '../api';
 
@@ -14,9 +15,13 @@ function sentence(text) {
 }
 
 export function UsersPage() {
+  const { role } = useAuth();
   const { notify } = useToast();
   const [data, setData] = useState(null); // { users, page, total }
   const [error, setError] = useState('');
+  // id de tenant -> nombre. Solo un superadmin puede leer la lista de clients; para
+  // un admin queda vacío y la columna muestra el identificador abreviado.
+  const [tenantNames, setTenantNames] = useState(() => new Map());
 
   const [page, setPage] = useState(1);
   const [searchInput, setSearchInput] = useState('');
@@ -49,6 +54,19 @@ export function UsersPage() {
   useEffect(() => {
     load(page, query);
   }, [page, query]);
+
+  useEffect(() => {
+    if (role !== 'superadmin') return;
+    api
+      .listClients()
+      .then((clients) => setTenantNames(new Map(clients.map((c) => [c.id, c.name]))))
+      .catch(() => {}); // sin nombres, la columna usa el identificador abreviado
+  }, [role]);
+
+  function tenantLabel(id) {
+    if (!id) return '—';
+    return tenantNames.get(id) || `${id.slice(0, 8)}…`;
+  }
 
   function onSearch(e) {
     e.preventDefault();
@@ -207,6 +225,7 @@ export function UsersPage() {
               <tr>
                 <th>Correo</th>
                 <th className="col-secondary">Usuario</th>
+                <th className="col-secondary">Tenant</th>
                 <th>Estado</th>
                 <th className="col-secondary">Creado</th>
                 <th></th>
@@ -217,6 +236,9 @@ export function UsersPage() {
                 <tr key={u.id} className={highlightID === u.id ? 'is-new' : undefined}>
                   <td className="mono cell-wrap">{u.email}</td>
                   <td className="cell-dim col-secondary">{u.username}</td>
+                  <td className="mono cell-dim col-secondary cell-clip" title={tenantNames.get(u.api_client_id) ? `${tenantNames.get(u.api_client_id)} (${u.api_client_id})` : u.api_client_id || 'Sin tenant asociado'}>
+                    {tenantLabel(u.api_client_id)}
+                  </td>
                   <td>
                     <span className={`status-dot status-dot--${u.is_active ? 'ok' : 'off'}`} />
                     {u.is_active ? 'Activo' : 'Baneado'}

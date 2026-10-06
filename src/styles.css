@@ -439,6 +439,14 @@ a {
 .data-table td:has(> .status-dot) {
   white-space: nowrap;
 }
+/* Texto largo en una celda angosta: se corta con puntos suspensivos; el
+   valor completo va en el atributo title. */
+.data-table td.cell-clip {
+  max-width: 190px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 /* Identificadores largos (correos): pueden partirse en vez de ensanchar. */
 .data-table td.cell-wrap {
   white-space: normal;

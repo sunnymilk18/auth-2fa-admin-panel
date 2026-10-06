@@ -75,10 +75,12 @@ Plan de 7 pasos acordado con el usuario:
 4. Página de Users — **casi terminada**: listado paginado (25 por
    página) con búsqueda, banear/desbanear y un menú "Más acciones" con
    ver/limpiar bloqueos, exigir PIN al iniciar sesión, revocar sesiones,
-   desactivar TOTP y resetear PIN. Faltan solo, dejados para un lote
-   aparte: cambiar el correo (necesita un campo de texto y afecta el
-   inicio de sesión) y una columna con el tenant del usuario (hoy la API
-   solo da el UUID; habría que cruzarlo con la lista de clients).
+   desactivar TOTP y resetear PIN. Tiene además una columna "Tenant": un
+   superadmin ve el nombre (cruzando el UUID con la lista de clients); un
+   admin, que no puede leer esa lista, ve el UUID abreviado. Falta solo,
+   para un lote aparte: cambiar el correo (necesita un campo de texto y
+   afecta el inicio de sesión). Una alternativa más limpia para los
+   nombres sería que el backend los incluya en el listado de usuarios.
 5. Página de Blacklist — **hecha**, usando el nuevo `GET /admin/blacklist`
    del backend: baneos activos con "Levantar baneo" (la confirmación avisa
    que la IP vuelve a empezar de cero), levantar el baneo de una IP
