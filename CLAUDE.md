@@ -65,49 +65,40 @@ Plan de 7 pasos acordado con el usuario:
 1. Scaffold del repo — hecho.
 2. Login/logout/sesión — hecho, probado en vivo por el usuario.
 3. Página de Clients (listar + crear + activar/desactivar + rotar key) —
-   construida, con diálogo de confirmación propio (no `window.confirm`) y
-   notificaciones tipo "toast". **Pendiente de confirmar que el bug de
-   abajo esté resuelto.**
-4. Página de Users — no empezada.
+   hecha, con diálogo de confirmación propio (no `window.confirm`) y
+   notificaciones tipo "toast". El bug de la pantalla negra está resuelto
+   (ver abajo); falta que el usuario confirme el flujo completo de
+   confirmar "Desactivar" y "Rotar key".
+4. Página de Users — **en curso, primera versión hecha**: listado
+   paginado (25 por página) con búsqueda, banear/desbanear y revocar
+   sesiones. Faltan, de a poco: desactivar TOTP, resetear PIN, cambiar
+   correo, exigir PIN al iniciar sesión, ver/limpiar bloqueos y una
+   columna con el tenant del usuario.
 5. Página de Blacklist — no empezada.
 6. Página de Accounts (gestión de admins/superadmins) — no empezada.
 7. Logout — ya funciona desde el `AppShell`, falta confirmación final.
 
-Todo el trabajo del frontend (login, sistema de diseño, Clients) está
-hecho localmente pero **no pusheado** — solo existe el commit inicial del
-scaffold en `origin`. Pedir confirmación explícita ("sí"/"súbelo") antes
-de cualquier commit/push, igual que se hace en el repo del backend.
+Todo lo anterior está pusheado a `origin/master`. Pedir confirmación
+explícita ("sí"/"súbelo") antes de cualquier commit/push, igual que se
+hace en el repo del backend.
 
-## Bug abierto: pantalla negra al desactivar/rotar en ClientsPage
+Pendiente de seguridad: las credenciales del admin de prueba quedaron en
+el historial del repo (commit `67dede4`). El repo es privado, así que se
+decidió no reescribir el historial; hay que rotar ese admin de prueba
+(en el repo del backend) antes de exponer el backend fuera de la máquina
+local o de dar acceso al repo a más personas.
 
-Al hacer clic en "Desactivar" o "Rotar key" (ambos pasan por el diálogo
-de confirmación `ConfirmDialog`), el usuario reporta que la pantalla se
-pone negra y no aparece ninguna notificación — ni éxito ni error.
+## Bug resuelto: pantalla negra al desactivar/rotar en ClientsPage
 
-Ya se verificó que **no es el backend**: se probaron los tres endpoints
-(`/admin/clients/{id}/deactivate`, `/activate`, `/rotate`) directamente
-con `curl`, usando la misma cookie de sesión y el header `X-Admin-Panel`
-que manda el panel, y los tres responden correctamente (204/200 con el
-`api_key` esperado). El problema está solo en el navegador.
-
-Hipótesis más probable, sin confirmar todavía: un error de JS no
-capturado durante el render (posiblemente relacionado con que
-`ToastProvider` envuelve toda la app y HMR de Vite no siempre re-envuelve
-bien un Context Provider nuevo agregado sobre la marcha) que tira abajo
-el árbol de React, dejando solo el fondo oscuro de la página — de ahí
-"pantalla negra" y ausencia total de notificación. Se le pidió al usuario
-un recargado forzado (Ctrl+Shift+R) y no se solucionó, así que puede ser
-otra cosa.
-
-**Siguiente paso real para resolverlo**: conseguir el error exacto de la
-consola del navegador (F12 → Console) en el momento en que pasa — eso es
-lo único que falta para diagnosticarlo con certeza. No asumir que ya está
-arreglado sin ese dato.
-
-Archivos relevantes: `src/pages/ClientsPage.jsx`,
-`src/components/ToastProvider.jsx`, `src/components/ConfirmDialog.jsx`,
-`src/App.jsx` (orden de providers), `src/styles.css` (animación
-`row-highlight`, estilos `.toast*`).
+Causa real (no era el backend ni `ToastProvider`): `.shell-content`
+usaba `animation: rise-in ... both`. El `both` deja aplicado el
+`transform` final, y un `transform` convierte al elemento en el bloque
+contenedor de sus descendientes `position: fixed`; el overlay del
+`ConfirmDialog` pasó a medir todo el `main` (decenas de miles de píxeles)
+y el diálogo quedó fuera de pantalla, dejando solo el oscurecimiento.
+Solución: `backwards` en lugar de `both`. Regla general: no dejar
+`transform`, `filter` ni `will-change` permanentes en un ancestro de algo
+`fixed`.
 
 ## Preferencias de trabajo del usuario
 

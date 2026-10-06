@@ -7,7 +7,7 @@ import { useAuth } from '../auth/AuthContext';
 // mientras tanto el ítem se ve pero no lleva a ningún lado.
 const NAV_ITEMS = [
   { label: 'Clients', path: '/clients', roles: ['superadmin'] },
-  { label: 'Users', path: null, roles: ['admin', 'superadmin'] },
+  { label: 'Users', path: '/users', roles: ['admin', 'superadmin'] },
   { label: 'Blacklist', path: null, roles: ['admin', 'superadmin'] },
   { label: 'Accounts', path: null, roles: ['superadmin'] },
 ];

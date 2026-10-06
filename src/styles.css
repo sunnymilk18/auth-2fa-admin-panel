@@ -173,6 +173,8 @@ a {
 @media (max-width: 720px) {
   .shell {
     grid-template-columns: minmax(0, 1fr);
+    /* Sin esto, si la página es corta la grilla estira la fila del menú. */
+    grid-template-rows: auto 1fr;
   }
   .shell-nav {
     flex-direction: row;
@@ -344,6 +346,32 @@ a {
 }
 .form--inline label {
   flex: 1;
+}
+
+.form--search {
+  flex-direction: row;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.form--search input {
+  flex: 1;
+  max-width: 380px;
+  min-width: 0;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 16px;
+  font-size: 14px;
+  color: var(--text-dim);
+}
+
+/* Si una tabla no cabe, se desplaza ella sola y no toda la página. */
+.table-wrap {
+  overflow-x: auto;
 }
 
 .data-table {

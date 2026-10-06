@@ -158,6 +158,7 @@ export function ClientsPage() {
       {clients && clients.length === 0 && <p>No hay clients todavía.</p>}
 
       {clients && clients.length > 0 && (
+        <div className="table-wrap">
         <table className="data-table">
           <thead>
             <tr>
@@ -198,6 +199,7 @@ export function ClientsPage() {
             ))}
           </tbody>
         </table>
+        </div>
       )}
 
       <ConfirmDialog

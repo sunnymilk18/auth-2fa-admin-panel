@@ -66,4 +66,15 @@ export const api = {
   activateClient: (id) => request(`/admin/clients/${encodeURIComponent(id)}/activate`, { method: 'POST' }),
   deactivateClient: (id) => request(`/admin/clients/${encodeURIComponent(id)}/deactivate`, { method: 'POST' }),
   rotateClient: (id) => request(`/admin/clients/${encodeURIComponent(id)}/rotate`, { method: 'POST' }),
+
+  // Users — admin y superadmin, abarca todos los tenants. Devuelve
+  // { users, page, page_size, total }.
+  listUsers: ({ page = 1, pageSize = 25, q = '' } = {}) => {
+    const params = new URLSearchParams({ page, page_size: pageSize });
+    if (q) params.set('q', q);
+    return request(`/admin/users/?${params}`);
+  },
+  banUser: (id) => request(`/admin/users/${encodeURIComponent(id)}/ban`, { method: 'POST' }),
+  unbanUser: (id) => request(`/admin/users/${encodeURIComponent(id)}/unban`, { method: 'POST' }),
+  revokeUserSessions: (id) => request(`/admin/users/${encodeURIComponent(id)}/revoke-sessions`, { method: 'POST' }),
 };
