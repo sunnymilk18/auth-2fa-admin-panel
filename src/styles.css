@@ -1,16 +1,553 @@
+/* Sistema de diseño del panel — ver el plan: la jerarquía visual sigue al
+   sistema de permisos real (admin / superadmin), no al tipo de dato. */
+
 :root {
-  color-scheme: light;
-  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color-scheme: dark;
+
+  --bg: #12151b;
+  --surface: #1b1f27;
+  --surface-raised: #232833;
+  --border: #2b313d;
+  --text: #e4e7ec;
+  --text-dim: #9099a8;
+
+  /* Ámbito admin — operativo, contenido. */
+  --admin: #4fb8ae;
+  --admin-soft: rgba(79, 184, 174, 0.14);
+
+  /* Ámbito superadmin — privilegio elevado. Nunca se mezcla con --danger:
+     ámbar significa "alcance mayor", rojo significa "esto destruye algo". */
+  --superadmin: #e8a33d;
+  --superadmin-soft: rgba(232, 163, 61, 0.14);
+
+  --danger: #e5484d;
+  --danger-soft: rgba(229, 72, 77, 0.14);
+
+  --font-sans: 'IBM Plex Sans', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+
+  --radius: 8px;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+* {
+  box-sizing: border-box;
 }
 
 body {
   margin: 0;
-  background: #f5f6f8;
-  color: #1a1d23;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.5;
 }
 
-.container {
-  max-width: 960px;
-  margin: 0 auto;
+h1, h2, h3 {
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+button {
+  font-family: inherit;
+}
+
+a {
+  color: var(--admin);
+}
+
+/* Identificadores: IPs, UUIDs, emails usados como identificador, tokens —
+   tipografía monoespaciada porque esta audiencia necesita leerlos y
+   copiarlos exactos, no es un adorno. */
+.mono {
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+}
+
+/* --- Badge de rol --------------------------------------------------- */
+/* El único elemento que lleva el color del rol como fondo sólido — el
+   resto de la UI lo usa como acento, no como relleno. */
+.role-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.role-badge--admin {
+  background: var(--admin-soft);
+  color: var(--admin);
+}
+.role-badge--superadmin {
+  background: var(--superadmin-soft);
+  color: var(--superadmin);
+}
+
+/* --- Shell: rail de navegación + barra superior ---------------------- */
+.shell {
+  display: grid;
+  /* minmax(0, 1fr): con 1fr a secas, una tabla ancha estira la columna y
+     desborda la página en vez de achicarse. */
+  grid-template-columns: 220px minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+.shell-nav {
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  padding: 20px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.shell-nav h1 {
+  font-size: 16px;
+  padding: 0 10px 18px;
+}
+
+.shell-nav-item {
+  position: relative;
+  display: block;
+  padding: 9px 10px 9px 14px;
+  border-radius: var(--radius);
+  color: var(--text-dim);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: default;
+  transition: background-color 0.15s var(--ease), color 0.15s var(--ease);
+}
+.shell-nav-item::before {
+  content: '';
+  position: absolute;
+  left: -14px;
+  top: 4px;
+  bottom: 4px;
+  width: 2px;
+  border-radius: 2px;
+  background: var(--admin);
+  transform: scaleY(0);
+  transition: transform 0.18s var(--ease);
+}
+.shell-nav-item.is-active {
+  background: var(--surface-raised);
+  color: var(--text);
+}
+.shell-nav-item.is-active::before {
+  transform: scaleY(1);
+}
+.shell-nav-item[data-disabled='true'] {
+  color: #4a5160;
+}
+
+.shell-main {
+  display: flex;
+  flex-direction: column;
+}
+
+.shell-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 14px;
+  padding: 14px 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.shell-identity {
+  font-size: 14px;
+  color: var(--text-dim);
+}
+
+.shell-content {
+  padding: 28px;
+  flex: 1;
+}
+
+/* Pantallas angostas: el rail de navegación pasa arriba, en una fila. Va
+   después de las reglas base para que las pise (misma especificidad). */
+@media (max-width: 720px) {
+  .shell {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .shell-nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+    padding: 12px 14px;
+    border-right: 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .shell-nav h1 {
+    width: 100%;
+    padding-bottom: 6px;
+  }
+  .shell-nav-item::before {
+    display: none;
+  }
+  .shell-content {
+    padding: 20px 16px;
+  }
+}
+
+/* --- Botones ---------------------------------------------------------- */
+.btn {
+  border: 1px solid var(--border);
+  background: var(--surface-raised);
+  color: var(--text);
+  border-radius: var(--radius);
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s var(--ease), transform 0.1s var(--ease), background-color 0.15s var(--ease);
+}
+.btn:hover {
+  border-color: #3a4152;
+}
+.btn:active:not(:disabled) {
+  transform: scale(0.97);
+}
+.btn:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+.btn--primary {
+  background: var(--admin);
+  border-color: var(--admin);
+  color: #0a1512;
+}
+.btn--ghost {
+  background: transparent;
+  border-color: transparent;
+  color: var(--text-dim);
+}
+.btn--ghost:hover {
+  color: var(--text);
+}
+
+/* --- Formularios -------------------------------------------------------- */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-dim);
+}
+
+.form input {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  transition: border-color 0.15s var(--ease), box-shadow 0.15s var(--ease);
+}
+.form input:focus-visible {
+  outline: none;
+  border-color: var(--admin);
+  box-shadow: 0 0 0 3px var(--admin-soft);
+}
+
+.error {
+  color: var(--danger);
+  font-size: 14px;
+  margin: 0;
+}
+
+/* --- Login -------------------------------------------------------------- */
+.login-shell {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding: 24px;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 360px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 32px;
+}
+
+/* Único momento de entrada orquestado — ni el login ni el contenido del
+   panel repiten esto en cada interacción, solo al aparecer. */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes rise-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .login-card,
+  .shell-content {
+    /* `backwards`, no `both`: con `forwards` el transform final queda aplicado
+       y convierte a .shell-content en el bloque contenedor de todo lo que sea
+       position: fixed (diálogo de confirmación), sacándolo de la pantalla. */
+    animation: rise-in 0.4s var(--ease) backwards;
+  }
+}
+
+.login-card h1 {
+  font-size: 20px;
+  margin-bottom: 4px;
+}
+
+.login-card p.subtitle {
+  color: var(--text-dim);
+  font-size: 14px;
+  margin: 0 0 24px;
+}
+
+.login-card .form button {
+  margin-top: 4px;
+}
+
+/* --- Páginas de datos (Clients, Users, Blacklist, Accounts) ------------ */
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.form--inline {
+  flex-direction: row;
+  align-items: flex-end;
+  gap: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 20px;
+}
+.form--inline label {
+  flex: 1;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.data-table th {
+  text-align: left;
+  color: var(--text-dim);
+  font-weight: 500;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+}
+.data-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+}
+.data-table tbody tr:hover {
+  background: var(--surface);
+}
+
+/* Sin display:flex: esta clase va sobre un <td>, y flex lo saca del layout
+   de tabla (se cortan las líneas separadoras de la fila). */
+.row-actions {
+  text-align: right;
+  white-space: nowrap;
+}
+.row-actions .btn + .btn {
+  margin-left: 6px;
+}
+.data-table td.mono,
+.data-table td:has(> .status-dot) {
+  white-space: nowrap;
+}
+
+.status-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  margin-right: 7px;
+}
+.status-dot--ok {
+  background: var(--admin);
+}
+.status-dot--off {
+  background: var(--text-dim);
+}
+
+/* --- Secreto de una sola vista (API key, TOTP) -------------------------- */
+.one-time-secret {
+  background: var(--superadmin-soft);
+  border: 1px solid var(--superadmin);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 20px;
+}
+.one-time-secret-label {
+  margin: 0 0 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-dim);
+}
+.one-time-secret-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg);
+  border-radius: var(--radius);
+  padding: 8px 10px;
+}
+.one-time-secret-row code {
+  flex: 1;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+.one-time-secret-warning {
+  margin: 8px 0 0;
+  font-size: 13px;
+  color: var(--superadmin);
+}
+
+/* --- Fila recién creada/modificada -------------------------------------- */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes row-highlight {
+    0% {
+      background: rgba(79, 184, 174, 0.32);
+    }
+    25% {
+      background: rgba(79, 184, 174, 0.32);
+    }
+    100% {
+      background: transparent;
+    }
+  }
+  .data-table tr.is-new td {
+    animation: row-highlight 3.5s var(--ease);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .data-table tr.is-new td {
+    background: var(--admin-soft);
+  }
+}
+
+/* --- Notificaciones flotantes -------------------------------------------- */
+.toast-stack {
+  position: fixed;
+  /* Abajo a la derecha: arriba tapaba el correo, el rol, "Cerrar sesión" y
+     el botón de acción principal de cada página. */
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 20;
+}
+
+.toast {
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--admin);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  font-size: 14px;
+  min-width: 220px;
+  max-width: 360px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+.toast--error {
+  border-left-color: var(--danger);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes toast-in {
+    from {
+      opacity: 0;
+      transform: translateX(16px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  .toast {
+    animation: toast-in 0.2s var(--ease);
+  }
+}
+
+/* --- Diálogo de confirmación --------------------------------------------- */
+.btn--danger {
+  background: var(--danger);
+  border-color: var(--danger);
+  color: #fff;
+}
+
+.dialog-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 10, 14, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 10;
+}
+
+.dialog {
+  width: 100%;
+  max-width: 400px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+}
+.dialog h3 {
+  font-size: 17px;
+  margin-bottom: 10px;
+}
+.dialog p {
+  color: var(--text-dim);
+  font-size: 14px;
+  margin: 0;
+}
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes dialog-in {
+    from {
+      opacity: 0;
+      transform: translateY(6px) scale(0.98);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+  .dialog {
+    animation: dialog-in 0.18s var(--ease);
+  }
 }

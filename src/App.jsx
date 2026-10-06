@@ -1,10 +1,38 @@
-// Scaffold inicial — login, rutas y páginas reales llegan en los próximos
-// pasos. Esto solo confirma que el proyecto arranca.
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from './auth/AuthContext';
+import { ToastProvider } from './components/ToastProvider';
+import { ProtectedRoute } from './auth/ProtectedRoute';
+import { LoginPage } from './pages/LoginPage';
+import { DashboardPage } from './pages/DashboardPage';
+import { ClientsPage } from './pages/ClientsPage';
+
 export default function App() {
   return (
-    <main className="container">
-      <h1>Panel de administración</h1>
-      <p>Proyecto base listo. Próximo paso: login.</p>
-    </main>
+    <BrowserRouter>
+      <ToastProvider>
+        <AuthProvider>
+          <Routes>
+            <Route path="/login" element={<LoginPage />} />
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute>
+                  <DashboardPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/clients"
+              element={
+                <ProtectedRoute roles={['superadmin']}>
+                  <ClientsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </AuthProvider>
+      </ToastProvider>
+    </BrowserRouter>
   );
 }
