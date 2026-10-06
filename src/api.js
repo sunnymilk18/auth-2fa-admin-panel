@@ -105,5 +105,10 @@ export const api = {
   listAccounts: () => request('/admin/accounts/'),
   createAccount: ({ email, password, role }) =>
     request('/admin/accounts/', { method: 'POST', body: { email, password, role } }),
+  // Reactiva una cuenta revocada con contraseña y secreto TOTP nuevos (nunca
+  // los anteriores). Devuelve { id, email, role, otpauth_url }, igual que al
+  // crear; 409 si la cuenta ya estaba activa.
+  reactivateAccount: (id, password) =>
+    request(`/admin/accounts/${encodeURIComponent(id)}/reactivate`, { method: 'POST', body: { password } }),
   revokeAccount: (id) => request(`/admin/accounts/${encodeURIComponent(id)}/revoke`, { method: 'POST' }),
 };

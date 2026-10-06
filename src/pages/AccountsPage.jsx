@@ -3,6 +3,7 @@ import { AppShell } from '../components/AppShell';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { OneTimeSecret } from '../components/OneTimeSecret';
 import { QrCode } from '../components/QrCode';
+import { ReactivateDialog } from '../components/ReactivateDialog';
 import { useAuth } from '../auth/AuthContext';
 import { useToast } from '../components/ToastProvider';
 import { api } from '../api';
@@ -38,6 +39,8 @@ export function AccountsPage() {
   const [created, setCreated] = useState(null);
   const [highlightID, setHighlightID] = useState(null);
   const [confirming, setConfirming] = useState(null);
+  // Cuenta revocada para la que se abrió el diálogo de reactivar.
+  const [reactivating, setReactivating] = useState(null);
 
   async function load() {
     try {
@@ -163,12 +166,15 @@ export function AccountsPage() {
           />
           <div className="new-account-body">
             <h3>
-              Cuenta de {created.email}{' '}
+              {created.reactivated ? 'Cuenta reactivada: ' : 'Cuenta de '}
+              {created.email}{' '}
               <span className={`role-badge role-badge--${created.role}`}>{created.role}</span>
             </h3>
             <p>
-              La persona nueva debe escanear este código con su app autenticadora para poder iniciar sesión. No se
-              puede volver a mostrar.
+              {created.reactivated
+                ? 'La persona debe registrar este código nuevo en su app autenticadora; el anterior ya no funciona. '
+                : 'La persona nueva debe escanear este código con su app autenticadora para poder iniciar sesión. '}
+              No se puede volver a mostrar.
             </p>
             {secretFrom(created.otpauthURL) && (
               <OneTimeSecret
@@ -218,6 +224,11 @@ export function AccountsPage() {
                     </td>
                     <td className="mono col-secondary">{new Date(a.created_at * 1000).toLocaleDateString()}</td>
                     <td className="row-actions">
+                      {!a.active && (
+                        <button type="button" className="btn btn--ghost" onClick={() => setReactivating(a)}>
+                          Reactivar
+                        </button>
+                      )}
                       {a.active && !isSelf && (
                         <button
                           type="button"
@@ -235,6 +246,20 @@ export function AccountsPage() {
             </tbody>
           </table>
         </div>
+      )}
+
+      {reactivating && (
+        <ReactivateDialog
+          account={reactivating}
+          onClose={() => setReactivating(null)}
+          onDone={async (res) => {
+            setReactivating(null);
+            setCreated({ email: res.email, role: res.role, otpauthURL: res.otpauth_url, reactivated: true });
+            await load();
+            flash(res.id);
+            notify(`Cuenta de "${res.email}" reactivada.`);
+          }}
+        />
       )}
 
       <ConfirmDialog

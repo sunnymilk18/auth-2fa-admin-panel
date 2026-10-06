@@ -91,22 +91,23 @@ Plan de 7 pasos acordado con el usuario:
 6. Página de Accounts (gestión de admins/superadmins) — **hecha** (solo
    superadmin): listar, crear (con QR del TOTP de un solo uso, usando la
    dependencia `qrcode`) y revocar; no deja revocar la cuenta propia.
-   **Pendiente, en espera del backend:** reactivar cuentas revocadas. El
-   usuario eligió el nivel seguro: `POST /admin/accounts/{id}/reactivate`
-   (solo superadmin) que pide una contraseña nueva, rota el secreto TOTP y
-   devuelve una `otpauth_url` nueva una sola vez; responde 409 si la cuenta
-   ya está activa. Cuando esté subido: `reactivateAccount(id, password)` en
-   `src/api.js`, botón "Reactivar" en las filas revocadas con un diálogo
-   que pide la contraseña, y reutilizar el panel del QR de `AccountsPage`.
+   También reactiva cuentas revocadas (`POST /admin/accounts/{id}/reactivate`,
+   solo superadmin): "Reactivar" pide una contraseña nueva, el backend rota
+   el secreto TOTP y se muestra el QR nuevo una sola vez (mismo panel que al
+   crear); no devuelve las credenciales anteriores a propósito. Probado
+   de punta a punta, incluido el inicio de sesión de la cuenta reactivada.
 7. Logout — ya funciona desde el `AppShell`, falta confirmación final.
 
 Todo lo anterior está pusheado a `origin/master`. Pedir confirmación
 explícita ("sí"/"súbelo") antes de cualquier commit/push, igual que se
 hace en el repo del backend.
 
-Las credenciales del admin de prueba están en el historial del repo (commit
-`67dede4`), pero es solo un usuario de prueba local y el usuario decidió que
-no hace falta rotarlo ni limpiar el historial. No volver a plantearlo.
+Las credenciales del primer admin de prueba (`test-admin@local.test`) están en
+el historial del repo (commit `67dede4`), pero esa cuenta ya fue revocada y
+sus credenciales no sirven. La cuenta de prueba vigente es
+`test-superadmin@local.test`, creada desde la página Accounts; sus datos
+están en `CLAUDE.local.md`. No hace falta limpiar el historial. No volver a
+plantearlo.
 
 ## Bug resuelto: pantalla negra al desactivar/rotar en ClientsPage
 
