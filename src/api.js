@@ -76,5 +76,7 @@ export const api = {
   },
   banUser: (id) => request(`/admin/users/${encodeURIComponent(id)}/ban`, { method: 'POST' }),
   unbanUser: (id) => request(`/admin/users/${encodeURIComponent(id)}/unban`, { method: 'POST' }),
+  disableUserTotp: (id) => request(`/admin/users/${encodeURIComponent(id)}/disable-totp`, { method: 'POST' }),
+  resetUserPin: (id) => request(`/admin/users/${encodeURIComponent(id)}/reset-pin`, { method: 'POST' }),
   revokeUserSessions: (id) => request(`/admin/users/${encodeURIComponent(id)}/revoke-sessions`, { method: 'POST' }),
 };

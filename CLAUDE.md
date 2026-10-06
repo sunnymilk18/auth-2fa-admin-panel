@@ -48,7 +48,10 @@ backend, es en ese otro repo/chat — este repo es solo el frontend.
   empresa-app.
 - Dev server en el puerto **5174** (empresa-frontend usa 5173).
 - Para construir UI, usar el plugin `frontend-design` (ya habilitado) —
-  instrucción explícita del usuario: "úsalo de ahora en adelante".
+  instrucción explícita del usuario: "úsalo de ahora en adelante". Invocarlo
+  con la herramienta `Skill` en **toda** tarea de interfaz, también en
+  ajustes y componentes pequeños, no solo en páginas nuevas; ya se olvidó
+  una vez (Users y `ActionMenu`) y el usuario lo notó.
 - Sistema de diseño ya definido en `src/styles.css`: estética oscura
   "operator console" — `#12151B`/`#1B1F27` de fondo, `#4FB8AE` como acento
   de rol admin, `#E8A33D` como acento de rol superadmin (deliberadamente
@@ -67,8 +70,8 @@ Plan de 7 pasos acordado con el usuario:
 3. Página de Clients (listar + crear + activar/desactivar + rotar key) —
    hecha, con diálogo de confirmación propio (no `window.confirm`) y
    notificaciones tipo "toast". El bug de la pantalla negra está resuelto
-   (ver abajo); falta que el usuario confirme el flujo completo de
-   confirmar "Desactivar" y "Rotar key".
+   (ver abajo) y el usuario confirmó que el flujo completo de
+   "Desactivar" y "Rotar key" funciona.
 4. Página de Users — **en curso, primera versión hecha**: listado
    paginado (25 por página) con búsqueda, banear/desbanear y revocar
    sesiones. Faltan, de a poco: desactivar TOTP, resetear PIN, cambiar

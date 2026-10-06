@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { AppShell } from '../components/AppShell';
+import { ActionMenu } from '../components/ActionMenu';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { useToast } from '../components/ToastProvider';
 import { api } from '../api';
@@ -75,6 +76,18 @@ export function UsersPage() {
     }
   }
 
+  // Pide confirmación (acciones que cortan acceso o borran algo) y luego
+  // corre la acción.
+  function confirmAction(user, { title, message, confirmLabel, danger = true, call, success, failure }) {
+    setConfirming({
+      title,
+      message,
+      confirmLabel,
+      danger,
+      run: () => runAction(user, { call, success, failure }),
+    });
+  }
+
   function onToggleBan(user) {
     if (!user.is_active) {
       runAction(user, {
@@ -84,33 +97,61 @@ export function UsersPage() {
       });
       return;
     }
-    setConfirming({
+    confirmAction(user, {
       title: `Banear a "${user.email}"`,
       message: 'Sus sesiones y dispositivos se cierran al instante y no podrá iniciar sesión hasta que lo desbanees.',
       confirmLabel: 'Banear',
-      danger: true,
-      run: () =>
-        runAction(user, {
-          call: api.banUser,
-          success: `"${user.email}" baneado.`,
-          failure: `No se pudo banear a "${user.email}".`,
-        }),
+      call: api.banUser,
+      success: `"${user.email}" baneado.`,
+      failure: `No se pudo banear a "${user.email}".`,
     });
   }
 
-  function onRevokeSessions(user) {
-    setConfirming({
-      title: `Revocar las sesiones de "${user.email}"`,
-      message: 'Se cierran todas sus sesiones abiertas. Podrá volver a iniciar sesión con normalidad.',
-      confirmLabel: 'Revocar sesiones',
-      danger: true,
-      run: () =>
-        runAction(user, {
-          call: api.revokeUserSessions,
-          success: `Sesiones de "${user.email}" revocadas.`,
-          failure: `No se pudo revocar las sesiones de "${user.email}".`,
-        }),
-    });
+  function menuItems(user) {
+    return [
+      {
+        // Reversible (el usuario vuelve a iniciar sesión): no es "peligro".
+        label: 'Revocar sesiones',
+        onSelect: () =>
+          confirmAction(user, {
+            danger: false,
+            title: `Revocar las sesiones de "${user.email}"`,
+            message: 'Se cierran todas sus sesiones abiertas. Podrá volver a iniciar sesión con normalidad.',
+            confirmLabel: 'Revocar sesiones',
+            call: api.revokeUserSessions,
+            success: `Sesiones de "${user.email}" revocadas.`,
+            failure: `No se pudo revocar las sesiones de "${user.email}".`,
+          }),
+      },
+      {
+        label: 'Desactivar TOTP',
+        danger: true,
+        onSelect: () =>
+          confirmAction(user, {
+            title: `Desactivar el TOTP de "${user.email}"`,
+            message:
+              'Deja de usar la app autenticadora y recibe el código por correo al iniciar sesión. Úsalo si perdió el teléfono.',
+            confirmLabel: 'Desactivar TOTP',
+            call: api.disableUserTotp,
+            success: `TOTP de "${user.email}" desactivado.`,
+            failure: `No se pudo desactivar el TOTP de "${user.email}".`,
+          }),
+      },
+      {
+        label: 'Resetear PIN',
+        danger: true,
+        onSelect: () =>
+          confirmAction(user, {
+            title: `Resetear el PIN de "${user.email}"`,
+            message:
+              'Se borra su PIN actual y se cierran todas sus sesiones y dispositivos de confianza. Tendrá que definir un PIN nuevo.',
+            confirmLabel: 'Resetear PIN',
+            call: api.resetUserPin,
+            success: `PIN de "${user.email}" reseteado.`,
+            failure: `No se pudo resetear el PIN de "${user.email}".`,
+          }),
+      },
+    ];
   }
 
   const totalPages = data ? Math.max(1, Math.ceil(data.total / PAGE_SIZE)) : 1;
@@ -149,39 +190,32 @@ export function UsersPage() {
             <thead>
               <tr>
                 <th>Correo</th>
-                <th>Usuario</th>
+                <th className="col-secondary">Usuario</th>
                 <th>Estado</th>
-                <th>Creado</th>
+                <th className="col-secondary">Creado</th>
                 <th></th>
               </tr>
             </thead>
             <tbody>
               {data.users.map((u) => (
                 <tr key={u.id} className={highlightID === u.id ? 'is-new' : undefined}>
-                  <td className="mono">{u.email}</td>
-                  <td>{u.username}</td>
+                  <td className="mono cell-wrap">{u.email}</td>
+                  <td className="cell-dim col-secondary">{u.username}</td>
                   <td>
                     <span className={`status-dot status-dot--${u.is_active ? 'ok' : 'off'}`} />
                     {u.is_active ? 'Activo' : 'Baneado'}
                   </td>
-                  <td className="mono">{new Date(u.created_at).toLocaleDateString()}</td>
+                  <td className="mono col-secondary">{new Date(u.created_at).toLocaleDateString()}</td>
                   <td className="row-actions">
                     <button
                       type="button"
-                      className="btn btn--ghost"
+                      className={`btn btn--ghost${u.is_active ? ' btn--quiet-danger' : ''}`}
                       disabled={busyID === u.id}
                       onClick={() => onToggleBan(u)}
                     >
                       {u.is_active ? 'Banear' : 'Desbanear'}
                     </button>
-                    <button
-                      type="button"
-                      className="btn btn--ghost"
-                      disabled={busyID === u.id}
-                      onClick={() => onRevokeSessions(u)}
-                    >
-                      Revocar sesiones
-                    </button>
+                    <ActionMenu items={menuItems(u)} disabled={busyID === u.id} />
                   </td>
                 </tr>
               ))}
