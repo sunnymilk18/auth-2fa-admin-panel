@@ -3,7 +3,9 @@ import { useState } from 'react';
 // Muestra una clave que el backend solo entrega una vez (API key, código
 // TOTP, etc.) con un botón para copiarla — se reusa en Clients y, más
 // adelante, en Accounts.
-export function OneTimeSecret({ label, value }) {
+// `wrap`: parte el valor en varias líneas (para algo que se escribe a mano, como
+// un secreto TOTP) en vez de dejarlo en una línea con desplazamiento.
+export function OneTimeSecret({ label, value, wrap }) {
   const [copied, setCopied] = useState(false);
 
   async function copy() {
@@ -13,7 +15,7 @@ export function OneTimeSecret({ label, value }) {
   }
 
   return (
-    <div className="one-time-secret">
+    <div className={`one-time-secret${wrap ? ' one-time-secret--wrap' : ''}`}>
       <p className="one-time-secret-label">{label}</p>
       <div className="one-time-secret-row">
         <code className="mono">{value}</code>

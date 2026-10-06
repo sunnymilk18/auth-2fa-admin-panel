@@ -88,7 +88,16 @@ Plan de 7 pasos acordado con el usuario:
    `seed-test-bans.py` (archivo local, fuera de git); no escribir en ese
    Redis desde aquí. Tampoco se probó la vista de un admin sin rol
    superadmin (no hay cuenta de prueba así).
-6. Página de Accounts (gestión de admins/superadmins) — no empezada.
+6. Página de Accounts (gestión de admins/superadmins) — **hecha** (solo
+   superadmin): listar, crear (con QR del TOTP de un solo uso, usando la
+   dependencia `qrcode`) y revocar; no deja revocar la cuenta propia.
+   **Pendiente, en espera del backend:** reactivar cuentas revocadas. El
+   usuario eligió el nivel seguro: `POST /admin/accounts/{id}/reactivate`
+   (solo superadmin) que pide una contraseña nueva, rota el secreto TOTP y
+   devuelve una `otpauth_url` nueva una sola vez; responde 409 si la cuenta
+   ya está activa. Cuando esté subido: `reactivateAccount(id, password)` en
+   `src/api.js`, botón "Reactivar" en las filas revocadas con un diálogo
+   que pide la contraseña, y reutilizar el panel del QR de `AccountsPage`.
 7. Logout — ya funciona desde el `AppShell`, falta confirmación final.
 
 Todo lo anterior está pusheado a `origin/master`. Pedir confirmación

@@ -9,7 +9,7 @@ const NAV_ITEMS = [
   { label: 'Clients', path: '/clients', roles: ['superadmin'] },
   { label: 'Users', path: '/users', roles: ['admin', 'superadmin'] },
   { label: 'Blacklist', path: '/blacklist', roles: ['admin', 'superadmin'] },
-  { label: 'Accounts', path: null, roles: ['superadmin'] },
+  { label: 'Accounts', path: '/accounts', roles: ['superadmin'] },
 ];
 
 export function AppShell({ children }) {

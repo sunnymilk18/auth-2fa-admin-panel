@@ -257,6 +257,7 @@ a {
   color: var(--text-dim);
 }
 
+.form select,
 .form input {
   font-family: var(--font-sans);
   font-size: 15px;
@@ -267,6 +268,7 @@ a {
   color: var(--text);
   transition: border-color 0.15s var(--ease), box-shadow 0.15s var(--ease);
 }
+.form select:focus-visible,
 .form input:focus-visible {
   outline: none;
   border-color: var(--admin);
@@ -344,6 +346,7 @@ a {
 
 .form--inline {
   flex-direction: row;
+  flex-wrap: wrap;
   align-items: flex-end;
   gap: 12px;
   background: var(--surface);
@@ -354,6 +357,7 @@ a {
 }
 .form--inline label {
   flex: 1;
+  min-width: 170px;
 }
 
 .form--search {
@@ -485,6 +489,12 @@ a {
   overflow-x: auto;
   white-space: nowrap;
 }
+.one-time-secret--wrap .one-time-secret-row code {
+  overflow-x: visible;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  letter-spacing: 0.06em;
+}
 .one-time-secret-warning {
   margin: 8px 0 0;
   font-size: 13px;
@@ -541,6 +551,39 @@ a {
   color: var(--text-dim);
   font-size: 14px;
   max-width: 62ch;
+}
+
+/* --- Cuenta recién creada (el TOTP se muestra una sola vez) -------------- */
+.new-account {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+  padding: 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+.new-account-qr {
+  flex: none;
+  width: 184px;
+  height: 184px;
+  border-radius: var(--radius);
+  background: #fff; /* un QR necesita fondo claro para escanearse bien */
+}
+.new-account-body {
+  flex: 1;
+  min-width: 240px;
+}
+.new-account-body h3 {
+  font-size: 16px;
+  margin-bottom: 6px;
+}
+.new-account-body p {
+  margin: 0 0 12px;
+  color: var(--text-dim);
+  font-size: 14px;
 }
 
 /* --- Diálogo de bloqueos ------------------------------------------------ */

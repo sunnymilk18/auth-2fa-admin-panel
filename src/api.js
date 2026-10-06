@@ -97,4 +97,13 @@ export const api = {
   listAllowlist: () => request('/admin/blacklist/allowlist/'),
   addAllowlist: (ip) => request('/admin/blacklist/allowlist/', { method: 'POST', body: { ip } }),
   removeAllowlist: (ip) => request(`/admin/blacklist/allowlist/${ip}`, { method: 'DELETE' }),
+
+  // Accounts — cuentas de operador, solo superadmin. Listar devuelve
+  // { accounts: [{ id, email, role, active, created_at }] } (created_at en
+  // segundos Unix). Crear devuelve además otpauth_url, que solo se entrega
+  // esa vez. Revocar es definitivo: el backend no tiene ruta para reactivar.
+  listAccounts: () => request('/admin/accounts/'),
+  createAccount: ({ email, password, role }) =>
+    request('/admin/accounts/', { method: 'POST', body: { email, password, role } }),
+  revokeAccount: (id) => request(`/admin/accounts/${encodeURIComponent(id)}/revoke`, { method: 'POST' }),
 };
