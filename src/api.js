@@ -86,4 +86,15 @@ export const api = {
   disableUserTotp: (id) => request(`/admin/users/${encodeURIComponent(id)}/disable-totp`, { method: 'POST' }),
   resetUserPin: (id) => request(`/admin/users/${encodeURIComponent(id)}/reset-pin`, { method: 'POST' }),
   revokeUserSessions: (id) => request(`/admin/users/${encodeURIComponent(id)}/revoke-sessions`, { method: 'POST' }),
+
+  // Blacklist — baneos de IP de toda la plataforma. Devuelve
+  // { bans: [{ ip, reference?, banned_at, banned_until, level, strikes, api_client_id }] }.
+  // La IP va sin codificar: encodeURIComponent convierte los ":" de una IPv6
+  // en %3A y el router del backend la entrega sin decodificar.
+  listBans: () => request('/admin/blacklist/'),
+  unbanIP: (ip) => request(`/admin/blacklist/${ip}`, { method: 'DELETE' }),
+  // Lista blanca — solo superadmin. Devuelve { ips: [...] }.
+  listAllowlist: () => request('/admin/blacklist/allowlist/'),
+  addAllowlist: (ip) => request('/admin/blacklist/allowlist/', { method: 'POST', body: { ip } }),
+  removeAllowlist: (ip) => request(`/admin/blacklist/allowlist/${ip}`, { method: 'DELETE' }),
 };

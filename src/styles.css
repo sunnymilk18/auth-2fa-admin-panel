@@ -411,6 +411,19 @@ a {
 .row-actions .btn {
   vertical-align: middle;
 }
+/* Si la tabla se desplaza, las acciones se quedan fijas al borde derecho:
+   que no se pierda lo único que se puede hacer sobre la fila. */
+.table-wrap .row-actions {
+  position: sticky;
+  right: 0;
+  background: var(--bg);
+  padding-left: 16px;
+  box-shadow: -12px 0 12px -8px var(--bg);
+}
+.data-table tbody tr:hover .row-actions {
+  background: var(--surface);
+  box-shadow: -12px 0 12px -8px var(--surface);
+}
 .row-actions .btn + .btn {
   margin-left: 6px;
 }
@@ -418,6 +431,7 @@ a {
   color: var(--text-dim);
 }
 .data-table td.mono,
+.data-table td.nowrap,
 .data-table td:has(> .status-dot) {
   white-space: nowrap;
 }
@@ -500,12 +514,33 @@ a {
   }
 }
 
-/* En pantallas angostas se oculta lo que repite o complementa al dato
-   principal, para que las acciones de la fila no queden fuera de vista. */
-@media (max-width: 720px) {
+/* Cuando el contenido no tiene mucho ancho (el menú lateral ocupa 220 px)
+   se oculta lo que repite o complementa al dato principal, para que las
+   acciones de la fila no queden fuera de vista. */
+@media (max-width: 1100px) {
   .data-table .col-secondary {
     display: none;
   }
+}
+
+/* --- Secciones de una página ------------------------------------------- */
+.page-section {
+  margin-top: 36px;
+}
+.section-heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+.section-heading h3 {
+  font-size: 16px;
+}
+.section-note {
+  margin: 0 0 16px;
+  color: var(--text-dim);
+  font-size: 14px;
+  max-width: 62ch;
 }
 
 /* --- Diálogo de bloqueos ------------------------------------------------ */

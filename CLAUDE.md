@@ -79,14 +79,15 @@ Plan de 7 pasos acordado con el usuario:
    aparte: cambiar el correo (necesita un campo de texto y afecta el
    inicio de sesión) y una columna con el tenant del usuario (hoy la API
    solo da el UUID; habría que cruzarlo con la lista de clients).
-5. Página de Blacklist — **en espera del backend**: el operador no tiene
-   hoy un endpoint para listar los baneos de IP activos (solo
-   `DELETE /admin/blacklist/{ip}` y la lista blanca, que es solo
-   superadmin). El usuario decidió agregar primero `GET /admin/blacklist`
-   en el repo del backend (todos los tenants, mismo formato que
-   `/system-admin/blacklist` más `api_client_id`). Cuando esté subido,
-   construir la página: baneos con "Levantar baneo" por fila y lista
-   blanca (listar/agregar/quitar) solo para superadmin.
+5. Página de Blacklist — **hecha**, usando el nuevo `GET /admin/blacklist`
+   del backend: baneos activos con "Levantar baneo" (la confirmación avisa
+   que la IP vuelve a empezar de cero), levantar el baneo de una IP
+   escrita a mano, y lista blanca (listar/agregar/quitar) solo para
+   superadmin. Pendiente de ver con datos reales: el Redis del backend es
+   remoto (Upstash), así que los baneos de prueba los crea el usuario con
+   `seed-test-bans.py` (archivo local, fuera de git); no escribir en ese
+   Redis desde aquí. Tampoco se probó la vista de un admin sin rol
+   superadmin (no hay cuenta de prueba así).
 6. Página de Accounts (gestión de admins/superadmins) — no empezada.
 7. Logout — ya funciona desde el `AppShell`, falta confirmación final.
 
