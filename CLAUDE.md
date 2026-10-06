@@ -56,9 +56,8 @@ backend, es en ese otro repo/chat — este repo es solo el frontend.
   IBM Plex Sans + IBM Plex Mono. Mantener esta paleta en páginas nuevas,
   no reinventarla por página.
 - `.env` local: `VITE_API_URL=http://localhost:8080`.
-- Credenciales de prueba (admin de prueba ya creado en la base local):
-  `test-admin@local.test` / `correct-horse-battery`, secreto TOTP
-  `CNNKGNZLCMGYBDGTT7C6T3PNSPSF56IN`.
+- Credenciales de prueba: hay un admin de prueba en la base local; sus datos
+  están en `CLAUDE.local.md` (ignorado por git, no se sube al repo).
 
 ## Estado actual (ver también el historial de commits del repo)
 
