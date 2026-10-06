@@ -96,7 +96,12 @@ Plan de 7 pasos acordado con el usuario:
    el secreto TOTP y se muestra el QR nuevo una sola vez (mismo panel que al
    crear); no devuelve las credenciales anteriores a propósito. Probado
    de punta a punta, incluido el inicio de sesión de la cuenta reactivada.
-7. Logout — ya funciona desde el `AppShell`, falta confirmación final.
+7. Logout — hecho y probado: la sesión se invalida en el servidor (la misma
+   cookie da 401 después), la interfaz vuelve a `/login`, y ninguna ruta
+   protegida es accesible sin sesión, tampoco con el botón atrás.
+
+**Los 7 pasos del plan están completos.** Quedan solo mejoras opcionales en
+Users: cambiar el correo de un usuario y una columna con su tenant.
 
 Todo lo anterior está pusheado a `origin/master`. Pedir confirmación
 explícita ("sí"/"súbelo") antes de cualquier commit/push, igual que se
