@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { AppShell } from '../components/AppShell';
+import { PageTitle } from '../components/PageTitle';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { OneTimeSecret } from '../components/OneTimeSecret';
 import { QrCode } from '../components/QrCode';
@@ -110,7 +111,7 @@ export function AccountsPage() {
   return (
     <AppShell>
       <div className="page-header">
-        <h2>Cuentas</h2>
+        <PageTitle>Cuentas</PageTitle>
         <button type="button" className="btn btn--primary" onClick={() => setCreating((v) => !v)}>
           {creating ? 'Cancelar' : 'Nueva cuenta'}
         </button>
@@ -190,7 +191,7 @@ export function AccountsPage() {
         </div>
       )}
 
-      {error && <p className="error">{error}</p>}
+      {error && <p className="error" role="alert">{error}</p>}
       {accounts === null && !error && <p>Cargando…</p>}
       {accounts && accounts.length === 0 && <p>No hay cuentas todavía.</p>}
 
@@ -203,7 +204,7 @@ export function AccountsPage() {
                 <th>Rol</th>
                 <th>Estado</th>
                 <th className="col-secondary">Creada</th>
-                <th></th>
+                <th><span className="sr-only">Acciones</span></th>
               </tr>
             </thead>
             <tbody>

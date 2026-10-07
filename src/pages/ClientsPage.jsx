@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { AppShell } from '../components/AppShell';
+import { PageTitle } from '../components/PageTitle';
 import { OneTimeSecret } from '../components/OneTimeSecret';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { Pagination } from '../components/Pagination';
@@ -146,7 +147,7 @@ export function ClientsPage() {
   return (
     <AppShell>
       <div className="page-header">
-        <h2>Clientes</h2>
+        <PageTitle>Clientes</PageTitle>
         <button type="button" className="btn btn--primary" onClick={() => setCreating((v) => !v)}>
           {creating ? 'Cancelar' : 'Nuevo cliente'}
         </button>
@@ -186,7 +187,7 @@ export function ClientsPage() {
         </form>
       )}
 
-      {error && <p className="error">{error}</p>}
+      {error && <p className="error" role="alert">{error}</p>}
 
       {clients === null && !error && <p>Cargando…</p>}
 
@@ -205,7 +206,7 @@ export function ClientsPage() {
                   <th>Nombre</th>
                   <th>Estado</th>
                   <th>Creado</th>
-                  <th></th>
+                  <th><span className="sr-only">Acciones</span></th>
                 </tr>
               </thead>
               <tbody>

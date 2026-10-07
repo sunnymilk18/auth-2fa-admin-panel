@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { AppShell } from '../components/AppShell';
+import { PageTitle } from '../components/PageTitle';
 import { ActionMenu } from '../components/ActionMenu';
 import { ChangeEmailDialog } from '../components/ChangeEmailDialog';
 import { LockoutsDialog } from '../components/LockoutsDialog';
@@ -191,7 +192,7 @@ export function UsersPage() {
   return (
     <AppShell>
       <div className="page-header">
-        <h2>Usuarios</h2>
+        <PageTitle>Usuarios</PageTitle>
       </div>
 
       <form onSubmit={onSearch} className="form form--search" role="search">
@@ -207,7 +208,7 @@ export function UsersPage() {
         </button>
       </form>
 
-      {error && <p className="error">{error}</p>}
+      {error && <p className="error" role="alert">{error}</p>}
 
       {data === null && !error && <p>Cargando…</p>}
 
@@ -226,7 +227,7 @@ export function UsersPage() {
                 <th className="col-secondary">Tenant</th>
                 <th>Estado</th>
                 <th className="col-secondary">Creado</th>
-                <th></th>
+                <th><span className="sr-only">Acciones</span></th>
               </tr>
             </thead>
             <tbody>

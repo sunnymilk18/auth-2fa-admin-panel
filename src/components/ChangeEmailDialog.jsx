@@ -41,6 +41,8 @@ export function ChangeEmailDialog({ user, onClose, onDone }) {
         Correo nuevo
         <input
           autoFocus
+          aria-invalid={error ? 'true' : undefined}
+          aria-describedby={error ? 'change-email-error' : undefined}
           required
           type="email"
           autoComplete="off"
@@ -50,7 +52,7 @@ export function ChangeEmailDialog({ user, onClose, onDone }) {
         />
       </label>
 
-      {error && <p className="error">{error}</p>}
+      {error && <p id="change-email-error" className="error" role="alert">{error}</p>}
 
       <div className="dialog-actions">
         <button type="button" className="btn btn--ghost" disabled={busy} onClick={onClose}>

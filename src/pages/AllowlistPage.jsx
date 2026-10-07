@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { AppShell } from '../components/AppShell';
+import { PageTitle } from '../components/PageTitle';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { useToast } from '../components/ToastProvider';
 import { api } from '../api';
@@ -91,7 +92,7 @@ export function AllowlistPage() {
     <AppShell>
       <div className="page-header">
         <div className="page-title">
-          <h2>Lista blanca</h2>
+          <PageTitle>Lista blanca</PageTitle>
           <span className="role-badge role-badge--superadmin">superadmin</span>
         </div>
       </div>
@@ -113,7 +114,7 @@ export function AllowlistPage() {
         </button>
       </form>
 
-      {error && <p className="error">{error}</p>}
+      {error && <p className="error" role="alert">{error}</p>}
       {ips === null && !error && <p>Cargando…</p>}
       {ips && ips.length === 0 && <p>La lista blanca está vacía.</p>}
 
@@ -123,7 +124,7 @@ export function AllowlistPage() {
             <thead>
               <tr>
                 <th>IP</th>
-                <th></th>
+                <th><span className="sr-only">Acciones</span></th>
               </tr>
             </thead>
             <tbody>

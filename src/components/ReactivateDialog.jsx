@@ -40,6 +40,8 @@ export function ReactivateDialog({ account, onClose, onDone }) {
         Contraseña nueva
         <input
           autoFocus
+          aria-invalid={error ? 'true' : undefined}
+          aria-describedby={error ? 'reactivate-error' : undefined}
           required
           type="password"
           minLength={8}
@@ -50,7 +52,7 @@ export function ReactivateDialog({ account, onClose, onDone }) {
         />
       </label>
 
-      {error && <p className="error">{error}</p>}
+      {error && <p id="reactivate-error" className="error" role="alert">{error}</p>}
 
       <div className="dialog-actions">
         <button type="button" className="btn btn--ghost" disabled={busy} onClick={onClose}>

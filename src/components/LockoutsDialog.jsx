@@ -68,7 +68,7 @@ export function LockoutsDialog({ user, onClose }) {
       <h3 id="lockouts-title">Bloqueos</h3>
       <p className="mono dialog-subject">{user.email}</p>
 
-      {error && <p className="error">{error}</p>}
+      {error && <p className="error" role="alert">{error}</p>}
       {!lockouts && !error && <p>Cargando…</p>}
 
       {lockouts && (

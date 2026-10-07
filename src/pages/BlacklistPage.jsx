@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { AppShell } from '../components/AppShell';
+import { PageTitle } from '../components/PageTitle';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { useToast } from '../components/ToastProvider';
 import { api } from '../api';
@@ -98,7 +99,7 @@ export function BlacklistPage() {
   return (
     <AppShell>
       <div className="page-header">
-        <h2>Lista negra</h2>
+        <PageTitle>Lista negra</PageTitle>
       </div>
 
       <p className="section-note">
@@ -118,7 +119,7 @@ export function BlacklistPage() {
         </button>
       </form>
 
-      {error && <p className="error">{error}</p>}
+      {error && <p className="error" role="alert">{error}</p>}
       {bans === null && !error && <p>Cargando…</p>}
       {bans && bans.length === 0 && <p>No hay baneos activos.</p>}
 
@@ -133,7 +134,7 @@ export function BlacklistPage() {
                 <th>Infracciones</th>
                 <th className="col-secondary">Tenant</th>
                 <th className="col-secondary">Referencia</th>
-                <th></th>
+                <th><span className="sr-only">Acciones</span></th>
               </tr>
             </thead>
             <tbody>

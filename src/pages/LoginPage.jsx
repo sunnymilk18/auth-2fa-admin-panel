@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 
@@ -10,6 +10,9 @@ function sentence(text) {
 
 export function LoginPage() {
   const { isAuthenticated, loading: sessionLoading, sessionExpired, login } = useAuth();
+  useEffect(() => {
+    document.title = 'Iniciar sesión · Panel de administración';
+  }, []);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [totpCode, setTotpCode] = useState('');
@@ -86,7 +89,7 @@ export function LoginPage() {
             />
           </label>
 
-          {error && <p className="error">{error}</p>}
+          {error && <p className="error" role="alert">{error}</p>}
 
           <button type="submit" className="btn btn--primary" disabled={submitting}>
             {submitting ? 'Entrando…' : 'Iniciar sesión'}

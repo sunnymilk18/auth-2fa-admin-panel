@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 
@@ -16,11 +17,22 @@ const NAV_ITEMS = [
 export function AppShell({ children }) {
   const { actor, role, logout } = useAuth();
   const items = NAV_ITEMS.filter((item) => item.roles.includes(role));
+  const mainRef = useRef(null);
 
   return (
     <div className="shell">
-      <nav className="shell-nav">
-        <h1>Panel de administración</h1>
+      <a
+        className="skip-link"
+        href="#contenido"
+        onClick={(e) => {
+          e.preventDefault();
+          mainRef.current?.focus();
+        }}
+      >
+        Saltar al contenido
+      </a>
+      <nav className="shell-nav" aria-label="Secciones">
+        <p className="shell-brand">Panel de administración</p>
         {items.map((item) =>
           item.path ? (
             <NavLink
@@ -45,7 +57,7 @@ export function AppShell({ children }) {
             Cerrar sesión
           </button>
         </header>
-        <main className="shell-content">{children}</main>
+        <main id="contenido" ref={mainRef} tabIndex={-1} className="shell-content">{children}</main>
       </div>
     </div>
   );
