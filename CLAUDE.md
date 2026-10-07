@@ -159,6 +159,8 @@ Plan de 7 pasos acordado con el usuario:
 
 **Los 7 pasos del plan están completos.** No queda nada pendiente del plan.
 
+Pantalla de inicio (`DashboardPage`): un candado (`WelcomeLock`) con la persona (contraseña) y el móvil (TOTP) a los lados, las secciones del rol (`NAV_ITEMS` en `AppShell` trae la descripción de cada una) y, solo si hay IPs baneadas, un aviso a la Lista negra. Al iniciar sesión el candado empieza abierto, cada factor se completa, ambos se acercan y el candado se cierra con destello y partículas; queda cerrado con los dos íconos girando despacio alrededor. La entrada se reproduce solo justo después de iniciar sesión (`AuthContext.login` deja `welcome-intro` en `sessionStorage`) y no con movimiento reducido; el resto de las veces se ve el estado final. Los dígitos son decorativos, no un código real. La marca "Panel de administración" del menú lleva a Inicio.
+
 Todo lo anterior está pusheado a `origin/master`. Pedir confirmación
 explícita ("sí"/"súbelo") antes de cualquier commit/push, igual que se
 hace en el repo del backend.

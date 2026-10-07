@@ -2,16 +2,15 @@ import { useRef } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 
-// Ítems de navegación con su alcance — los de superadmin solo se muestran
-// a quien tiene ese rol, la misma regla que ya aplica el backend. `path`
-// queda null hasta que cada pantalla exista de verdad (próximos pasos);
-// mientras tanto el ítem se ve pero no lleva a ningún lado.
-const NAV_ITEMS = [
-  { label: 'Clientes', path: '/clients', roles: ['superadmin'] },
-  { label: 'Usuarios', path: '/users', roles: ['admin', 'superadmin'] },
-  { label: 'Lista negra', path: '/blacklist', roles: ['admin', 'superadmin'] },
-  { label: 'Lista blanca', path: '/allowlist', roles: ['superadmin'] },
-  { label: 'Cuentas', path: '/accounts', roles: ['superadmin'] },
+// Ítems de navegación con su alcance: los de superadmin solo se muestran
+// a quien tiene ese rol, la misma regla que ya aplica el backend.
+// `description` es la línea que acompaña a cada sección en la pantalla de inicio.
+export const NAV_ITEMS = [
+  { label: 'Clientes', path: '/clients', roles: ['superadmin'], description: 'Crea clientes, actívalos o desactívalos y rota sus claves.' },
+  { label: 'Usuarios', path: '/users', roles: ['admin', 'superadmin'], description: 'Banea o desbanea, corrige correos y gestiona PIN y TOTP.' },
+  { label: 'Lista negra', path: '/blacklist', roles: ['admin', 'superadmin'], description: 'Consulta las IPs baneadas y levanta un baneo.' },
+  { label: 'Lista blanca', path: '/allowlist', roles: ['superadmin'], description: 'IPs exentas de sanciones en toda la plataforma.' },
+  { label: 'Cuentas', path: '/accounts', roles: ['superadmin'], description: 'Crea, reactiva y revoca cuentas de operadores.' },
 ];
 
 export function AppShell({ children }) {
@@ -32,7 +31,9 @@ export function AppShell({ children }) {
         Saltar al contenido
       </a>
       <nav className="shell-nav" aria-label="Secciones">
-        <p className="shell-brand">Panel de administración</p>
+        <NavLink to="/" end className="shell-brand">
+          Panel de administración
+        </NavLink>
         {items.map((item) =>
           item.path ? (
             <NavLink

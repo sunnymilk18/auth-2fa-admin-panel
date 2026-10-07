@@ -49,6 +49,12 @@ export function AuthProvider({ children }) {
   async function login(email, password, totpCode) {
     await api.login({ email, password, totp_code: totpCode });
     setSessionExpired(false);
+    // La pantalla de inicio da la bienvenida con una animación solo tras un inicio de sesión.
+    try {
+      sessionStorage.setItem('welcome-intro', '1');
+    } catch {
+      // sin almacenamiento: simplemente no hay animación
+    }
     await refreshIdentity();
   }
 
