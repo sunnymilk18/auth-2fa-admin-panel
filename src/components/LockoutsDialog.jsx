@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Modal } from './Modal';
 import { useToast } from './ToastProvider';
 import { api } from '../api';
 
@@ -46,12 +47,6 @@ export function LockoutsDialog({ user, onClose }) {
     load();
   }, [user.id]);
 
-  useEffect(() => {
-    const onKeyDown = (e) => e.key === 'Escape' && onClose();
-    document.addEventListener('keydown', onKeyDown);
-    return () => document.removeEventListener('keydown', onKeyDown);
-  }, [onClose]);
-
   async function onClear() {
     setBusy(true);
     try {
@@ -69,38 +64,30 @@ export function LockoutsDialog({ user, onClose }) {
   const anyLocked = lockouts && (lockouts.login.locked || lockouts.pin.locked);
 
   return (
-    <div className="dialog-overlay" role="presentation" onClick={onClose}>
-      <div
-        className="dialog"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="lockouts-title"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <h3 id="lockouts-title">Bloqueos</h3>
-        <p className="mono dialog-subject">{user.email}</p>
+    <Modal labelledBy="lockouts-title" onClose={onClose} busy={busy}>
+      <h3 id="lockouts-title">Bloqueos</h3>
+      <p className="mono dialog-subject">{user.email}</p>
 
-        {error && <p className="error">{error}</p>}
-        {!lockouts && !error && <p>Cargando…</p>}
+      {error && <p className="error">{error}</p>}
+      {!lockouts && !error && <p>Cargando…</p>}
 
-        {lockouts && (
-          <ul className="lockout-list">
-            <Row label="Inicio de sesión" status={lockouts.login} />
-            <Row label="PIN" status={lockouts.pin} />
-          </ul>
-        )}
+      {lockouts && (
+        <ul className="lockout-list">
+          <Row label="Inicio de sesión" status={lockouts.login} />
+          <Row label="PIN" status={lockouts.pin} />
+        </ul>
+      )}
 
-        <div className="dialog-actions">
-          <button type="button" className="btn btn--ghost" onClick={onClose}>
-            Cerrar
+      <div className="dialog-actions">
+        <button type="button" className="btn btn--ghost" onClick={onClose}>
+          Cerrar
+        </button>
+        {anyLocked && (
+          <button type="button" className="btn btn--primary" disabled={busy} onClick={onClear}>
+            Limpiar bloqueos
           </button>
-          {anyLocked && (
-            <button type="button" className="btn btn--primary" disabled={busy} onClick={onClear}>
-              Limpiar bloqueos
-            </button>
-          )}
-        </div>
+        )}
       </div>
-    </div>
+    </Modal>
   );
 }

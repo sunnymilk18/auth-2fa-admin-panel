@@ -64,6 +64,11 @@ backend, es en ese otro repo/chat — este repo es solo el frontend.
   cliente", "Correo". Se dejan como están los términos técnicos: **"tenant"
   se queda como "tenant"** (decisión del usuario, no volver a plantearlo),
   TOTP, PIN, QR, API.
+- Todo diálogo se construye sobre `Modal` (`src/components/Modal.jsx`), nunca
+  con un overlay propio: da Escape, Tab atrapado dentro, foco inicial
+  (`data-autofocus` o `autoFocus`), devolución del foco al botón de origen y
+  bloqueo del scroll de fondo. En una confirmación destructiva el foco empieza
+  en "Cancelar". Para un diálogo con campos, `<Modal as="form" …>`.
 - Tablas en pantallas angostas (≤720 px): la tabla de Usuarios pasa a tarjetas
   con la clase `data-table--cards` y las celdas `cell-email`/`cell-status`/
   `cell-tenant` (ver el bloque "Tabla en tarjetas" de `styles.css`). Si otra

@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { Modal } from './Modal';
 import { api } from '../api';
 
 function sentence(text) {
@@ -14,12 +15,6 @@ export function ReactivateDialog({ account, onClose, onDone }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    const onKeyDown = (e) => e.key === 'Escape' && !busy && onClose();
-    document.addEventListener('keydown', onKeyDown);
-    return () => document.removeEventListener('keydown', onKeyDown);
-  }, [onClose, busy]);
-
   async function onSubmit(e) {
     e.preventDefault();
     setBusy(true);
@@ -34,46 +29,37 @@ export function ReactivateDialog({ account, onClose, onDone }) {
   }
 
   return (
-    <div className="dialog-overlay" role="presentation" onClick={() => !busy && onClose()}>
-      <form
-        className="dialog form"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="reactivate-title"
-        onClick={(e) => e.stopPropagation()}
-        onSubmit={onSubmit}
-      >
-        <h3 id="reactivate-title">Reactivar la cuenta de "{account.email}"</h3>
-        <p>
-          La cuenta vuelve con una contraseña nueva y un código TOTP nuevo: la persona tendrá que registrar de nuevo su
-          app autenticadora. Las credenciales anteriores dejan de funcionar.
-        </p>
+    <Modal as="form" className="form" labelledBy="reactivate-title" busy={busy} onClose={onClose} onSubmit={onSubmit}>
+      <h3 id="reactivate-title">Reactivar la cuenta de "{account.email}"</h3>
+      <p>
+        La cuenta vuelve con una contraseña nueva y un código TOTP nuevo: la persona tendrá que registrar de nuevo su
+        app autenticadora. Las credenciales anteriores dejan de funcionar.
+      </p>
 
-        <label>
-          Contraseña nueva
-          <input
-            autoFocus
-            required
-            type="password"
-            minLength={8}
-            autoComplete="new-password"
-            placeholder="Mínimo 8 caracteres"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </label>
+      <label>
+        Contraseña nueva
+        <input
+          autoFocus
+          required
+          type="password"
+          minLength={8}
+          autoComplete="new-password"
+          placeholder="Mínimo 8 caracteres"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+      </label>
 
-        {error && <p className="error">{error}</p>}
+      {error && <p className="error">{error}</p>}
 
-        <div className="dialog-actions">
-          <button type="button" className="btn btn--ghost" disabled={busy} onClick={onClose}>
-            Cancelar
-          </button>
-          <button type="submit" className="btn btn--primary" disabled={busy}>
-            Reactivar cuenta
-          </button>
-        </div>
-      </form>
-    </div>
+      <div className="dialog-actions">
+        <button type="button" className="btn btn--ghost" disabled={busy} onClick={onClose}>
+          Cancelar
+        </button>
+        <button type="submit" className="btn btn--primary" disabled={busy}>
+          Reactivar cuenta
+        </button>
+      </div>
+    </Modal>
   );
 }

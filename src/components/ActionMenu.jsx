@@ -124,7 +124,9 @@ export function ActionMenu({ label = 'Más acciones', title, items, disabled }) 
                 // El foco sigue al cursor: así nunca hay dos opciones resaltadas a la vez.
                 onMouseEnter={(e) => e.currentTarget.focus()}
                 onClick={() => {
-                  close();
+                  // El foco vuelve al botón antes de actuar: así un diálogo que se abra
+                  // lo toma como su origen y se lo devuelve al cerrar.
+                  close({ restoreFocus: true });
                   item.onSelect();
                 }}
               >
