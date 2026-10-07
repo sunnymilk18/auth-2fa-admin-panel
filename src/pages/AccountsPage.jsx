@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { AppShell } from '../components/AppShell';
 import { PageHeader } from '../components/PageHeader';
+import { PasswordField } from '../components/PasswordField';
+import { secretFrom } from '../utils/totp';
 import { EmptyState } from '../components/EmptyState';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { OneTimeSecret } from '../components/OneTimeSecret';
@@ -13,16 +15,6 @@ import { api } from '../api';
 function sentence(text) {
   const t = text.trim();
   return t.charAt(0).toUpperCase() + t.slice(1) + (/[.!?]$/.test(t) ? '' : '.');
-}
-
-// El secreto TOTP viene dentro de la URL otpauth, para quien prefiera
-// escribirlo a mano en vez de escanear el QR.
-function secretFrom(otpauthURL) {
-  try {
-    return new URL(otpauthURL).searchParams.get('secret') || '';
-  } catch {
-    return '';
-  }
 }
 
 export function AccountsPage() {
@@ -135,18 +127,15 @@ export function AccountsPage() {
               onChange={(e) => setEmail(e.target.value)}
             />
           </label>
-          <label>
-            Contraseña
-            <input
-              required
-              type="password"
-              minLength={8}
-              autoComplete="new-password"
-              placeholder="Mínimo 8 caracteres"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </label>
+          <PasswordField
+            label="Contraseña"
+            required
+            minLength={8}
+            autoComplete="new-password"
+            placeholder="Mínimo 8 caracteres"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
           <label>
             Rol
             <select required value={role} onChange={(e) => setRole(e.target.value)}>

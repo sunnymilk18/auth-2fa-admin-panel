@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
+import { PasswordField } from '../components/PasswordField';
 
 // Los mensajes de la API vienen en minúscula y sin punto final.
 function sentence(text) {
@@ -64,16 +65,13 @@ export function LoginPage() {
               onChange={(e) => setEmail(e.target.value)}
             />
           </label>
-          <label>
-            Contraseña
-            <input
-              type="password"
-              required
-              autoComplete="current-password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </label>
+          <PasswordField
+            label="Contraseña"
+            required
+            autoComplete="current-password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
           <label>
             Código de la app autenticadora
             <input

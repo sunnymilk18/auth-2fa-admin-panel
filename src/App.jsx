@@ -9,6 +9,8 @@ import { UsersPage } from './pages/UsersPage';
 import { BlacklistPage } from './pages/BlacklistPage';
 import { AllowlistPage } from './pages/AllowlistPage';
 import { AccountsPage } from './pages/AccountsPage';
+import { ActivityPage } from './pages/ActivityPage';
+import { MyAccountPage } from './pages/MyAccountPage';
 
 export default function App() {
   return (
@@ -62,6 +64,22 @@ export default function App() {
               element={
                 <ProtectedRoute roles={['superadmin']}>
                   <AccountsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/activity"
+              element={
+                <ProtectedRoute roles={['superadmin']}>
+                  <ActivityPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/account"
+              element={
+                <ProtectedRoute roles={['admin', 'superadmin']}>
+                  <MyAccountPage />
                 </ProtectedRoute>
               }
             />

@@ -335,6 +335,9 @@ h1[tabindex='-1']:focus {
 
 /* --- Botones ---------------------------------------------------------- */
 .btn {
+  /* También se usa sobre enlaces (<a class="btn">): sin subrayado. */
+  text-decoration: none;
+  display: inline-block;
   border: 1px solid var(--control-border);
   background: var(--surface-raised);
   color: var(--text);
@@ -511,7 +514,7 @@ h1[tabindex='-1']:focus {
   margin: 0 0 24px;
 }
 
-.login-card .form button {
+.login-card .form .btn {
   margin-top: 4px;
 }
 
@@ -1010,6 +1013,7 @@ h1[tabindex='-1']:focus {
     font-size: 14px;
   }
   .data-table--stack td.cell-title {
+    order: -1;
     flex: 1 1 100%;
     font-size: 14px;
     font-weight: 500;
@@ -1212,6 +1216,9 @@ h1[tabindex='-1']:focus {
   border-radius: 12px;
   padding: 24px;
 }
+.dialog.dialog--wide {
+  max-width: 480px;
+}
 .dialog h3 {
   font-size: 17px;
   margin-bottom: 10px;
@@ -1242,6 +1249,143 @@ h1[tabindex='-1']:focus {
   .dialog {
     animation: dialog-in 0.18s var(--ease);
   }
+}
+
+/* Filtros sobre una lista (p. ej. Actividad). */
+.form--filters {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.form--filters label {
+  flex: 1 1 170px;
+  min-width: 0;
+  font-size: 13px;
+}
+.form--filters select,
+.form--filters input {
+  font-size: 14px;
+  padding: 8px 10px;
+  min-width: 0;
+}
+/* Campo de contraseña con el botón de mostrar/ocultar dentro del cuadro. */
+.form .field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.form .field > label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-dim);
+}
+.form--inline .field {
+  flex: 1;
+  min-width: 170px;
+}
+.password-field {
+  position: relative;
+  display: flex;
+}
+.password-field input {
+  flex: 1;
+  min-width: 0;
+  padding-right: 46px;
+}
+.password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 7px;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  transform: translateY(-50%);
+  border: 1px solid var(--control-border);
+  border-radius: 6px;
+  background: var(--surface-raised);
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: border-color 0.15s var(--ease), color 0.15s var(--ease);
+}
+.password-toggle:hover {
+  border-color: var(--control-border-hover);
+  color: var(--text);
+}
+.password-toggle:focus-visible {
+  outline: 2px solid var(--admin);
+  outline-offset: 2px;
+}
+.password-toggle[aria-pressed='true'] {
+  border-color: var(--admin-border);
+  color: var(--admin-text);
+}
+
+span.cell-dim {
+  color: var(--text-dim);
+}
+
+/* Mi cuenta. */
+.account-id {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  color: var(--text-dim);
+}
+.setting-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 720px;
+}
+.setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 18px 20px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+}
+.setting-row h2 {
+  margin: 0 0 4px;
+  font-size: 16px;
+}
+.setting-row p {
+  margin: 0;
+  max-width: 52ch;
+  color: var(--text-dim);
+  font-size: 14px;
+}
+.setting-row .btn {
+  flex: none;
+}
+@media (max-width: 720px) {
+  .setting-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+}
+
+/* Paso de escaneo al rotar el TOTP: QR a la izquierda, clave a mano a la derecha. */
+.totp-scan {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 16px;
+}
+.totp-scan > :last-child {
+  flex: 1 1 200px;
+  min-width: 0;
 }
 
 /* --- Inicio: sello de sesión verificada + secciones del rol ---------------- */

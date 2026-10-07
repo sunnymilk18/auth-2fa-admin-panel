@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 
 // Ítems de navegación con su alcance: los de superadmin solo se muestran
@@ -11,6 +11,7 @@ export const NAV_ITEMS = [
   { label: 'Lista negra', path: '/blacklist', roles: ['admin', 'superadmin'], description: 'Consulta las IPs baneadas y levanta un baneo.' },
   { label: 'Lista blanca', path: '/allowlist', roles: ['superadmin'], description: 'IPs exentas de sanciones en toda la plataforma.' },
   { label: 'Cuentas', path: '/accounts', roles: ['superadmin'], description: 'Crea, reactiva y revoca cuentas de operadores.' },
+  { label: 'Actividad', path: '/activity', roles: ['superadmin'], description: 'Quién hizo qué, cuándo y desde qué IP.' },
 ];
 
 // Pie del menú: a qué API está conectado el panel y si responde (GET /health,
@@ -101,6 +102,9 @@ export function AppShell({ children }) {
         <header className="shell-topbar">
           <span className="shell-identity mono">{actor}</span>
           <span className={`role-badge role-badge--${role}`}>{role}</span>
+          <Link to="/account" className="btn btn--ghost">
+            Mi cuenta
+          </Link>
           <button type="button" className="btn btn--ghost" onClick={logout}>
             Cerrar sesión
           </button>

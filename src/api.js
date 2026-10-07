@@ -115,4 +115,23 @@ export const api = {
   reactivateAccount: (id, password) =>
     request(`/admin/accounts/${encodeURIComponent(id)}/reactivate`, { method: 'POST', body: { password } }),
   revokeAccount: (id) => request(`/admin/accounts/${encodeURIComponent(id)}/revoke`, { method: 'POST' }),
+
+  // Cuenta propia (cualquier rol). Una contraseña o un código incorrectos
+  // responden 403 y no 401, para que el panel no lo tome por sesión terminada.
+  changePassword: (currentPassword, newPassword) =>
+    request('/admin/auth/password', { method: 'POST', body: { current_password: currentPassword, new_password: newPassword } }),
+  // Rotar el TOTP es en dos pasos: el primero devuelve { otpauth_url } sin
+  // activar nada; el segundo confirma con un código del secreto nuevo.
+  startTotpRotation: (password) => request('/admin/auth/totp/rotate', { method: 'POST', body: { password } }),
+  confirmTotpRotation: (code) => request('/admin/auth/totp/rotate/confirm', { method: 'POST', body: { code } }),
+
+  // Registro de actividad (solo superadmin). `from`/`to` van en RFC 3339.
+  listAudit: ({ page = 1, pageSize = 25, actor = '', action = '', from = '', to = '' } = {}) => {
+    const params = new URLSearchParams({ page: String(page), page_size: String(pageSize) });
+    if (actor) params.set('actor', actor);
+    if (action) params.set('action', action);
+    if (from) params.set('from', from);
+    if (to) params.set('to', to);
+    return request(`/admin/audit/?${params}`);
+  },
 };

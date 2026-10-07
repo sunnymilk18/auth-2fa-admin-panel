@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Modal } from './Modal';
+import { PasswordField } from './PasswordField';
 import { api } from '../api';
 
 function sentence(text) {
@@ -36,21 +37,18 @@ export function ReactivateDialog({ account, onClose, onDone }) {
         app autenticadora. Las credenciales anteriores dejan de funcionar.
       </p>
 
-      <label>
-        Contraseña nueva
-        <input
-          autoFocus
-          aria-invalid={error ? 'true' : undefined}
-          aria-describedby={error ? 'reactivate-error' : undefined}
-          required
-          type="password"
-          minLength={8}
-          autoComplete="new-password"
-          placeholder="Mínimo 8 caracteres"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-      </label>
+      <PasswordField
+        label="Contraseña nueva"
+        autoFocus
+        aria-invalid={error ? 'true' : undefined}
+        aria-describedby={error ? 'reactivate-error' : undefined}
+        required
+        minLength={8}
+        autoComplete="new-password"
+        placeholder="Mínimo 8 caracteres"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+      />
 
       {error && <p id="reactivate-error" className="error" role="alert">{error}</p>}
 

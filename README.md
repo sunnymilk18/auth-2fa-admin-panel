@@ -17,6 +17,8 @@ Este repositorio es únicamente el frontend; el backend vive en su propio repo.
 | Lista negra | `/blacklist` | admin y superadmin | Ver las IPs baneadas y levantar un baneo. |
 | Lista blanca | `/allowlist` | superadmin | IPs exentas de sanciones en toda la plataforma. |
 | Cuentas | `/accounts` | superadmin | Crear, reactivar y revocar cuentas de operadores. |
+| Actividad | `/activity` | superadmin | Registro de quién hizo qué, cuándo y desde qué IP, con filtros por operador, acción y fechas. |
+| Mi cuenta | `/account` | admin y superadmin | Cambiar la propia contraseña y rotar el propio código TOTP (en dos pasos, con QR). |
 
 Los permisos los aplica el backend (responde 403 si el rol no alcanza); el
 panel solo oculta lo que no corresponde.
