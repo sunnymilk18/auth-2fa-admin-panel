@@ -52,6 +52,7 @@ export function AuthProvider({ children }) {
     // La pantalla de inicio da la bienvenida con una animación solo tras un inicio de sesión.
     try {
       sessionStorage.setItem('welcome-intro', '1');
+      sessionStorage.setItem('login-at', String(Date.now()));
     } catch {
       // sin almacenamiento: simplemente no hay animación
     }
@@ -66,6 +67,11 @@ export function AuthProvider({ children }) {
     }
     setSessionExpired(false);
     setIdentity(null);
+    try {
+      sessionStorage.removeItem('login-at');
+    } catch {
+      // nada que limpiar
+    }
   }
 
   const value = {

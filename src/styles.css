@@ -1217,31 +1217,54 @@ h1[tabindex='-1']:focus {
   gap: 8px;
   min-width: 0;
 }
+.welcome-line {
+  width: 1px;
+  height: 26px;
+  margin: 2px 0 14px;
+  background: linear-gradient(to bottom, var(--seal), transparent);
+  opacity: 0.8;
+}
 .welcome-title {
   margin: 0;
-  font-size: 32px;
+  font-size: 34px;
   font-weight: 600;
   letter-spacing: -0.02em;
   line-height: 1.15;
-}
-.welcome-who {
-  margin: 0;
-  color: var(--text-dim);
-  font-size: 16px;
   overflow-wrap: anywhere;
 }
-.welcome-who .mono {
-  color: var(--text);
+.welcome-domain {
+  margin: 0;
+  color: var(--text-dim);
+  font-size: 15px;
+  overflow-wrap: anywhere;
 }
-.welcome-role {
-  margin: 4px 0 0;
+.welcome-facts {
+  list-style: none;
+  margin: 14px 0 0;
+  padding: 0;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  gap: 8px 12px;
+  gap: 8px 0;
+  color: var(--text-dim);
+  font-size: 14px;
+}
+.welcome-facts li {
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+}
+.welcome-facts li + li {
+  border-left: 1px solid var(--control-border);
+}
+.welcome-chip {
+  gap: 7px;
+  color: var(--seal);
+  font-weight: 600;
 }
 .welcome-scope {
+  margin: 10px 0 0;
   color: var(--text-dim);
   font-size: 14px;
   max-width: 44ch;
@@ -1348,7 +1371,7 @@ h1[tabindex='-1']:focus {
     transform-origin: 0 0;
   }
   .welcome-title {
-    font-size: 26px;
+    font-size: 28px;
   }
 }
 
