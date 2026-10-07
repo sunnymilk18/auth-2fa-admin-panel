@@ -8,20 +8,41 @@
   --surface: #1b1f27;
   --surface-raised: #232833;
   --border: #2b313d;
+  /* Borde de un control interactivo (botón, ítem de menú): más fuerte que el de una
+     tarjeta o separador, para que se lea como algo que se puede pulsar. */
+  --control-border: #525d72;
+  --control-border-hover: #7a86a0;
   --text: #e4e7ec;
   --text-dim: #9099a8;
 
   /* Ámbito admin — operativo, contenido. */
   --admin: #4fb8ae;
   --admin-soft: rgba(79, 184, 174, 0.14);
+  /* Misma idea que la familia de rojos: el botón principal es un tono tenue con
+     borde, no un relleno sólido. --admin-text es el teal claro para texto. */
+  --admin-text: #86dcd2;
+  --admin-tint: rgba(79, 184, 174, 0.2);
+  --admin-tint-hover: rgba(79, 184, 174, 0.3);
+  --admin-border: rgba(79, 184, 174, 0.6);
 
   /* Ámbito superadmin — privilegio elevado. Nunca se mezcla con --danger:
      ámbar significa "alcance mayor", rojo significa "esto destruye algo". */
   --superadmin: #e8a33d;
   --superadmin-soft: rgba(232, 163, 61, 0.14);
 
+  /* Familia de rojos para todo lo destructivo: cada tono con un uso, para que se
+     lea como un solo sistema y no como rojos sueltos.
+       --danger        acentos y marcas (punto de estado, borde de un aviso)
+       --danger-tint   relleno de un botón de confirmar (tenue, no sólido)
+       --danger-text   texto e íconos sobre fondo oscuro (el rojo puro se ve áspero)
+       --danger-soft   fondo tenue al apuntar o enfocar
+       --danger-border borde al apuntar */
   --danger: #e5484d;
+  --danger-tint: rgba(229, 72, 77, 0.2);
+  --danger-tint-hover: rgba(229, 72, 77, 0.3);
+  --danger-text: #ff8a8e;
   --danger-soft: rgba(229, 72, 77, 0.14);
+  --danger-border: rgba(229, 72, 77, 0.55);
 
   --font-sans: 'IBM Plex Sans', system-ui, sans-serif;
   --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
@@ -101,7 +122,7 @@ a {
   padding: 20px 14px;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 6px;
 }
 
 .shell-nav h1 {
@@ -112,14 +133,19 @@ a {
 .shell-nav-item {
   position: relative;
   display: block;
-  padding: 9px 10px 9px 14px;
+  padding: 8px 10px 8px 14px;
+  border: 1px solid var(--control-border);
   border-radius: var(--radius);
-  color: var(--text-dim);
+  color: var(--text);
   text-decoration: none;
   font-size: 14px;
   font-weight: 500;
-  cursor: default;
-  transition: background-color 0.15s var(--ease), color 0.15s var(--ease);
+  cursor: pointer;
+  transition: background-color 0.15s var(--ease), border-color 0.15s var(--ease), color 0.15s var(--ease);
+}
+.shell-nav-item:hover {
+  background: var(--surface-raised);
+  border-color: var(--control-border-hover);
 }
 .shell-nav-item::before {
   content: '';
@@ -134,14 +160,22 @@ a {
   transition: transform 0.18s var(--ease);
 }
 .shell-nav-item.is-active {
-  background: var(--surface-raised);
+  background: var(--admin-soft);
+  border-color: rgba(79, 184, 174, 0.5);
   color: var(--text);
+  font-weight: 600;
 }
 .shell-nav-item.is-active::before {
   transform: scaleY(1);
 }
 .shell-nav-item[data-disabled='true'] {
   color: #4a5160;
+  border-color: var(--border);
+  cursor: default;
+}
+.shell-nav-item[data-disabled='true']:hover {
+  background: transparent;
+  border-color: var(--border);
 }
 
 .shell-main {
@@ -199,7 +233,7 @@ a {
 
 /* --- Botones ---------------------------------------------------------- */
 .btn {
-  border: 1px solid var(--border);
+  border: 1px solid var(--control-border);
   background: var(--surface-raised);
   color: var(--text);
   border-radius: var(--radius);
@@ -209,8 +243,25 @@ a {
   cursor: pointer;
   transition: border-color 0.15s var(--ease), transform 0.1s var(--ease), background-color 0.15s var(--ease);
 }
-.btn:hover {
-  border-color: #3a4152;
+.btn:hover:not(:disabled) {
+  border-color: var(--control-border-hover);
+}
+.btn[aria-expanded='true'] {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--control-border-hover);
+}
+.btn--primary:hover:not(:disabled) {
+  background: var(--admin-tint-hover);
+  border-color: var(--admin);
+}
+.btn--danger:hover:not(:disabled) {
+  background: var(--danger-tint-hover);
+  border-color: var(--danger);
+}
+.btn:focus-visible,
+.shell-nav-item:focus-visible {
+  outline: 2px solid var(--admin);
+  outline-offset: 2px;
 }
 .btn:active:not(:disabled) {
   transform: scale(0.97);
@@ -219,22 +270,29 @@ a {
   opacity: 0.55;
   cursor: default;
 }
+/* Acción principal: tono teal tenue + borde + texto teal claro (antes un relleno
+   sólido, demasiado pesado frente al resto de la interfaz). */
 .btn--primary {
-  background: var(--admin);
-  border-color: var(--admin);
-  color: #0a1512;
+  background: var(--admin-tint);
+  border-color: var(--admin-border);
+  color: var(--admin-text);
 }
+/* Botón secundario: contorno visible y un fondo apenas más claro que la página.
+   Antes era texto sin borde ni fondo y no se distinguía de una etiqueta. */
 .btn--ghost {
-  background: transparent;
-  border-color: transparent;
-  color: var(--text-dim);
-}
-.btn--ghost:hover {
+  background: rgba(255, 255, 255, 0.03);
   color: var(--text);
 }
-/* Acción destructiva discreta: se ve como las demás hasta que se apunta. */
-.btn--quiet-danger:hover:not(:disabled) {
-  color: var(--danger);
+.btn--ghost:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.08);
+}
+/* Acción destructiva discreta: se ve como las demás hasta que se apunta; ahí el
+   rojo aparece en el texto, el borde y el fondo. */
+.btn--quiet-danger:hover:not(:disabled),
+.btn--quiet-danger:focus-visible {
+  color: var(--danger-text);
+  border-color: var(--danger-border);
+  background: var(--danger-soft);
 }
 .btn--icon {
   padding: 8px 10px;
@@ -276,7 +334,7 @@ a {
 }
 
 .error {
-  color: var(--danger);
+  color: var(--danger-text);
   font-size: 14px;
   margin: 0;
 }
@@ -414,6 +472,8 @@ a {
 }
 .row-actions .btn {
   vertical-align: middle;
+  padding: 5px 12px;
+  font-size: 13px;
 }
 /* Si la tabla se desplaza, las acciones se quedan fijas al borde derecho:
    que no se pierda lo único que se puede hacer sobre la fila. */
@@ -622,18 +682,34 @@ a {
 .menu {
   position: fixed;
   z-index: 15;
-  min-width: 200px;
-  padding: 4px;
+  min-width: 248px;
+  max-width: 320px;
+  padding: 6px;
   background: var(--surface-raised);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  border: 1px solid var(--control-border);
+  border-radius: 10px;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.5), 0 2px 6px rgba(0, 0, 0, 0.35);
   display: flex;
   flex-direction: column;
 }
+/* Sobre quién actúa el menú: da contexto y evita equivocarse de fila. */
+.menu-header {
+  margin: 0 0 6px;
+  padding: 6px 10px 10px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-dim);
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 .menu-item {
-  height: 38px;
-  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  height: 36px;
+  padding: 0 10px;
   border: 0;
   border-radius: 6px;
   background: transparent;
@@ -641,34 +717,55 @@ a {
   font-size: 14px;
   text-align: left;
   cursor: pointer;
+  transition: background-color 0.12s var(--ease);
+}
+.menu-item-icon {
+  flex: none;
+  color: var(--text-dim);
+  transition: color 0.12s var(--ease);
 }
 .menu-item:hover,
 .menu-item:focus-visible {
-  background: var(--surface);
+  background: rgba(255, 255, 255, 0.07);
   outline: none;
+}
+.menu-item:hover .menu-item-icon,
+.menu-item:focus-visible .menu-item-icon {
+  color: var(--text);
 }
 .menu-divider {
   height: 1px;
-  margin: 4px 6px;
+  margin: 6px 4px;
   background: var(--border);
 }
-.menu-item--danger {
-  color: var(--danger);
+/* Acciones que debilitan o borran credenciales: misma familia de rojos que el
+   resto de lo destructivo del panel (ver --danger-text y compañía). */
+.menu-item--danger,
+.menu-item--danger .menu-item-icon {
+  color: var(--danger-text);
+}
+.menu-item--danger .menu-item-icon {
+  opacity: 0.85;
 }
 .menu-item--danger:hover,
 .menu-item--danger:focus-visible {
   background: var(--danger-soft);
+}
+.menu-item--danger:hover .menu-item-icon,
+.menu-item--danger:focus-visible .menu-item-icon {
+  color: var(--danger-text);
+  opacity: 1;
 }
 
 @media (prefers-reduced-motion: no-preference) {
   @keyframes menu-in {
     from {
       opacity: 0;
-      transform: translateY(-4px);
+      transform: translateY(-4px) scale(0.98);
     }
     to {
       opacity: 1;
-      transform: translateY(0);
+      transform: translateY(0) scale(1);
     }
   }
   .menu {
@@ -721,10 +818,12 @@ a {
 }
 
 /* --- Diálogo de confirmación --------------------------------------------- */
+/* Confirmar algo destructivo: mismo lenguaje que "Banear" o el menú al apuntarlos
+   (fondo rojo tenue + borde + texto rojo claro), no un bloque rojo sólido. */
 .btn--danger {
-  background: var(--danger);
-  border-color: var(--danger);
-  color: #fff;
+  background: var(--danger-tint);
+  border-color: var(--danger-border);
+  color: var(--danger-text);
 }
 
 .dialog-overlay {

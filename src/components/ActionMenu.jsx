@@ -1,8 +1,11 @@
 import { Fragment, useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
+import { Icon } from './Icon';
 
-const ITEM_HEIGHT = 38;
-const MENU_PADDING = 8;
-const DIVIDER_HEIGHT = 9;
+const ITEM_HEIGHT = 36;
+const MENU_PADDING = 14;
+const DIVIDER_HEIGHT = 13;
+const HEADER_HEIGHT = 44;
 
 // Una línea separa el primer ítem de peligro del resto: marca dónde empiezan
 // las acciones que debilitan o borran algo.
@@ -10,8 +13,12 @@ const startsDangerGroup = (item, i, all) => item.danger && i > 0 && !all[i - 1].
 
 // Menú de acciones de una fila. Se posiciona con `fixed` a partir del botón
 // porque la tabla vive en un contenedor con scroll horizontal, que recortaría
-// un menú `absolute` en las últimas filas. `items`: [{ label, onSelect, danger }].
-export function ActionMenu({ label = 'Más acciones', items, disabled }) {
+// un menú `absolute` en las últimas filas. Se dibuja en el `body` (portal) y no
+// dentro de la celda: la celda de acciones es `sticky`, crea su propio orden de
+// apilamiento y las celdas de las filas siguientes taparían el menú.
+// `title`: sobre qué actúa el menú (p. ej. el correo del usuario). `items`:
+// [{ label, icon, onSelect, danger }].
+export function ActionMenu({ label = 'Más acciones', title, items, disabled }) {
   const [pos, setPos] = useState(null); // { top, right } mientras está abierto
   const buttonRef = useRef(null);
   const menuRef = useRef(null);
@@ -29,7 +36,10 @@ export function ActionMenu({ label = 'Más acciones', items, disabled }) {
     }
     const rect = buttonRef.current.getBoundingClientRect();
     const menuHeight =
-      items.length * ITEM_HEIGHT + items.filter(startsDangerGroup).length * DIVIDER_HEIGHT + MENU_PADDING;
+      items.length * ITEM_HEIGHT +
+      items.filter(startsDangerGroup).length * DIVIDER_HEIGHT +
+      (title ? HEADER_HEIGHT : 0) +
+      MENU_PADDING;
     // Si no cabe debajo del botón, se abre hacia arriba.
     const fitsBelow = rect.bottom + 4 + menuHeight <= window.innerHeight;
     setPos({
@@ -90,8 +100,20 @@ export function ActionMenu({ label = 'Más acciones', items, disabled }) {
           <circle cx="13" cy="8" r="1.5" />
         </svg>
       </button>
-      {open && (
-        <div ref={menuRef} className="menu" role="menu" style={{ top: pos.top, right: pos.right }}>
+      {open &&
+        createPortal(
+        <div
+          ref={menuRef}
+          className="menu"
+          role="menu"
+          aria-label={title || label}
+          style={{ top: pos.top, right: pos.right }}
+        >
+          {title && (
+            <div className="menu-header mono" aria-hidden="true">
+              {title}
+            </div>
+          )}
           {items.map((item, i) => (
             <Fragment key={item.label}>
               {startsDangerGroup(item, i, items) && <div className="menu-divider" role="separator" />}
@@ -99,17 +121,21 @@ export function ActionMenu({ label = 'Más acciones', items, disabled }) {
                 type="button"
                 role="menuitem"
                 className={`menu-item${item.danger ? ' menu-item--danger' : ''}`}
+                // El foco sigue al cursor: así nunca hay dos opciones resaltadas a la vez.
+                onMouseEnter={(e) => e.currentTarget.focus()}
                 onClick={() => {
                   close();
                   item.onSelect();
                 }}
               >
-                {item.label}
+                {item.icon && <Icon name={item.icon} className="menu-item-icon" />}
+                <span>{item.label}</span>
               </button>
             </Fragment>
           ))}
-        </div>
-      )}
+        </div>,
+          document.body
+        )}
     </>
   );
 }

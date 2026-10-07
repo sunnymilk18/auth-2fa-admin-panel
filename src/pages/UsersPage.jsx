@@ -123,10 +123,11 @@ export function UsersPage() {
   function menuItems(user) {
     const pinRequired = user.pin_required_at_login;
     return [
-      { label: 'Ver bloqueos', onSelect: () => setLockoutsFor(user) },
-      { label: 'Corregir correo', onSelect: () => setEmailFor(user) },
+      { label: 'Ver bloqueos', icon: 'lock', onSelect: () => setLockoutsFor(user) },
+      { label: 'Corregir correo', icon: 'mail', onSelect: () => setEmailFor(user) },
       {
         label: pinRequired ? 'Dejar de exigir PIN' : 'Exigir PIN al iniciar sesión',
+        icon: pinRequired ? 'shield-off' : 'shield-check',
         onSelect: () =>
           runAction(user, {
             call: (id) => api.setUserLoginPinRequired(id, !pinRequired),
@@ -139,6 +140,7 @@ export function UsersPage() {
       {
         // Reversible (el usuario vuelve a iniciar sesión): no es "peligro".
         label: 'Revocar sesiones',
+        icon: 'log-out',
         onSelect: () =>
           confirmAction(user, {
             danger: false,
@@ -152,6 +154,7 @@ export function UsersPage() {
       },
       {
         label: 'Desactivar TOTP',
+        icon: 'phone-off',
         danger: true,
         onSelect: () =>
           confirmAction(user, {
@@ -166,6 +169,7 @@ export function UsersPage() {
       },
       {
         label: 'Resetear PIN',
+        icon: 'rotate-ccw',
         danger: true,
         onSelect: () =>
           confirmAction(user, {
@@ -251,7 +255,7 @@ export function UsersPage() {
                     >
                       {u.is_active ? 'Banear' : 'Desbanear'}
                     </button>
-                    <ActionMenu items={menuItems(u)} disabled={busyID === u.id} />
+                    <ActionMenu title={u.email} items={menuItems(u)} disabled={busyID === u.id} />
                   </td>
                 </tr>
               ))}

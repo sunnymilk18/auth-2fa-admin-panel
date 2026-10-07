@@ -58,6 +58,26 @@ backend, es en ese otro repo/chat — este repo es solo el frontend.
   distinto de `#E5484D`, reservado para acciones destructivas/peligro),
   IBM Plex Sans + IBM Plex Mono. Mantener esta paleta en páginas nuevas,
   no reinventarla por página.
+- Todo lo que se pueda pulsar debe verse pulsable sin apuntarlo: borde visible
+  (`--control-border`), nunca texto suelto sobre el fondo. Botones secundarios
+  = `.btn--ghost` (contorno + fondo tenue), ítems del menú lateral con borde,
+  y rojo solo al apuntar lo destructivo (`.btn--quiet-danger`). No volver a
+  hacer botones "fantasma" sin borde; el usuario lo marcó como confuso.
+- Ningún botón es un relleno sólido: el principal (`.btn--primary`) es un teal
+  tenue con borde y texto `--admin-text` (`--admin-tint`, `--admin-border`),
+  igual que el destructivo es un rojo tenue. El usuario encontró los rellenos
+  sólidos (rojo y teal) demasiado fuertes frente al resto. Los sólidos quedan
+  solo para marcas pequeñas (punto de estado, barra del menú activo).
+- Lo destructivo usa SIEMPRE la misma familia de rojos de `styles.css`, cada
+  tono con su uso: `--danger-text` (texto e íconos), `--danger-soft` (fondo al
+  apuntar), `--danger-border` (borde al apuntar), `--danger-tint` (botón de
+  confirmar: tenue, nunca un rojo sólido) y `--danger` (marcas: punto de
+  estado, aviso). No usar
+  `#e5484d` suelto ni inventar otro rojo. Lo reversible (p. ej. revocar
+  sesiones) NO va en rojo.
+- Un menú o popover que salga de una tabla se dibuja con un portal en `body`
+  (ver `ActionMenu`): las celdas `sticky` crean su propio apilamiento y tapan
+  cualquier cosa que viva dentro de ellas.
 - `.env` local: `VITE_API_URL=http://localhost:8080`.
 - Credenciales de prueba: hay un admin de prueba en la base local; sus datos
   están en `CLAUDE.local.md` (ignorado por git, no se sube al repo).
