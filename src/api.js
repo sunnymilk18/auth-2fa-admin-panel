@@ -83,6 +83,10 @@ export const api = {
     request(`/admin/users/${encodeURIComponent(id)}/clear-lockouts`, { method: 'POST', body: { which } }),
   setUserLoginPinRequired: (id, required) =>
     request(`/admin/users/${encodeURIComponent(id)}/login-pin-required`, { method: 'PUT', body: { required } }),
+  // Inicia la corrección del correo: el backend envía un código al correo nuevo y
+  // el cambio se aplica cuando la persona lo confirma (no antes).
+  changeUserEmail: (id, newEmail) =>
+    request(`/admin/users/${encodeURIComponent(id)}/change-email`, { method: 'POST', body: { new_email: newEmail } }),
   disableUserTotp: (id) => request(`/admin/users/${encodeURIComponent(id)}/disable-totp`, { method: 'POST' }),
   resetUserPin: (id) => request(`/admin/users/${encodeURIComponent(id)}/reset-pin`, { method: 'POST' }),
   revokeUserSessions: (id) => request(`/admin/users/${encodeURIComponent(id)}/revoke-sessions`, { method: 'POST' }),

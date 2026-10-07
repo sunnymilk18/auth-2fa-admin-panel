@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { AppShell } from '../components/AppShell';
 import { ActionMenu } from '../components/ActionMenu';
+import { ChangeEmailDialog } from '../components/ChangeEmailDialog';
 import { LockoutsDialog } from '../components/LockoutsDialog';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { useAuth } from '../auth/AuthContext';
@@ -33,6 +34,8 @@ export function UsersPage() {
   const [confirming, setConfirming] = useState(null);
   // Usuario cuyo diálogo de bloqueos está abierto.
   const [lockoutsFor, setLockoutsFor] = useState(null);
+  // Usuario cuyo diálogo de corrección de correo está abierto.
+  const [emailFor, setEmailFor] = useState(null);
 
   // Si el usuario cambia de página o busca mientras una petición sigue en
   // vuelo, solo vale la respuesta de la última.
@@ -132,6 +135,7 @@ export function UsersPage() {
     const pinRequired = user.pin_required_at_login;
     return [
       { label: 'Ver bloqueos', onSelect: () => setLockoutsFor(user) },
+      { label: 'Corregir correo', onSelect: () => setEmailFor(user) },
       {
         label: pinRequired ? 'Dejar de exigir PIN' : 'Exigir PIN al iniciar sesión',
         onSelect: () =>
@@ -283,6 +287,17 @@ export function UsersPage() {
             </button>
           </nav>
         </>
+      )}
+
+      {emailFor && (
+        <ChangeEmailDialog
+          user={emailFor}
+          onClose={() => setEmailFor(null)}
+          onDone={(newEmail) => {
+            notify(`Código enviado a "${newEmail}". El correo cambia cuando la persona lo confirme.`);
+            setEmailFor(null);
+          }}
+        />
       )}
 
       {lockoutsFor && <LockoutsDialog user={lockoutsFor} onClose={() => setLockoutsFor(null)} />}

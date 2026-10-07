@@ -72,15 +72,17 @@ Plan de 7 pasos acordado con el usuario:
    notificaciones tipo "toast". El bug de la pantalla negra está resuelto
    (ver abajo) y el usuario confirmó que el flujo completo de
    "Desactivar" y "Rotar key" funciona.
-4. Página de Users — **casi terminada**: listado paginado (25 por
-   página) con búsqueda, banear/desbanear y un menú "Más acciones" con
-   ver/limpiar bloqueos, exigir PIN al iniciar sesión, revocar sesiones,
-   desactivar TOTP y resetear PIN. Tiene además una columna "Tenant": un
-   superadmin ve el nombre (cruzando el UUID con la lista de clients); un
-   admin, que no puede leer esa lista, ve el UUID abreviado. Falta solo,
-   para un lote aparte: cambiar el correo (necesita un campo de texto y
-   afecta el inicio de sesión). Una alternativa más limpia para los
-   nombres sería que el backend los incluya en el listado de usuarios.
+4. Página de Users — **hecha**: listado paginado (25 por página) con
+   búsqueda, columna "Tenant", banear/desbanear y un menú "Más acciones"
+   con ver/limpiar bloqueos, corregir correo, exigir PIN al iniciar sesión,
+   revocar sesiones, desactivar TOTP y resetear PIN. La columna Tenant
+   muestra el nombre a un superadmin (cruzando el UUID con la lista de
+   clients) y el UUID abreviado a un admin, que no puede leer esa lista.
+   "Corregir correo" solo inicia la corrección: el backend envía un código
+   al correo nuevo y el cambio se aplica cuando la persona lo confirma (el
+   administrador nunca ve el código); se probó el envío real, no la
+   confirmación. Una alternativa más limpia para los nombres de tenant sería
+   que el backend los incluya en el listado de usuarios.
 5. Página de Blacklist — **hecha**, usando el nuevo `GET /admin/blacklist`
    del backend: baneos activos con "Levantar baneo" (la confirmación avisa
    que la IP vuelve a empezar de cero), levantar el baneo de una IP
@@ -102,8 +104,7 @@ Plan de 7 pasos acordado con el usuario:
    cookie da 401 después), la interfaz vuelve a `/login`, y ninguna ruta
    protegida es accesible sin sesión, tampoco con el botón atrás.
 
-**Los 7 pasos del plan están completos.** Quedan solo mejoras opcionales en
-Users: cambiar el correo de un usuario y una columna con su tenant.
+**Los 7 pasos del plan están completos.** No queda nada pendiente del plan.
 
 Todo lo anterior está pusheado a `origin/master`. Pedir confirmación
 explícita ("sí"/"súbelo") antes de cualquier commit/push, igual que se
