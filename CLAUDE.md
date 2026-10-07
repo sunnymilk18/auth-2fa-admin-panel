@@ -128,10 +128,7 @@ Plan de 7 pasos acordado con el usuario:
    "Corregir correo" solo inicia la corrección: el backend envía un código
    al correo nuevo y el cambio se aplica cuando la persona lo confirma (el
    administrador nunca ve el código); se probó el envío real, no la
-   confirmación. Pendiente opcional en el backend: que `GET /admin/blacklist`
-   también traiga el nombre del tenant (hoy la columna de Blacklist muestra el
-   UUID abreviado; el handler no usa Postgres y habría que cablearle el
-   repositorio de clients).
+   confirmación. La columna "Tenant" de Lista negra también muestra el nombre (`api_client_name`, con el UUID abreviado de respaldo). El backend responde 502 claro si falla el envío del correo de "Corregir correo", y 409 si se reactiva una cuenta que ya está activa; el panel muestra el campo `error` tal cual.
 5. Página de Blacklist — **hecha**, usando el nuevo `GET /admin/blacklist`
    del backend: baneos activos con "Levantar baneo" (la confirmación avisa
    que la IP vuelve a empezar de cero) y levantar el baneo de una IP

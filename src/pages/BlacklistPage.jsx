@@ -146,8 +146,11 @@ export function BlacklistPage() {
                   </td>
                   <td>{b.level}</td>
                   <td>{b.strikes}</td>
-                  <td className="mono cell-dim col-secondary" title={b.api_client_id || 'Sin tenant asociado'}>
-                    {b.api_client_id ? `${b.api_client_id.slice(0, 8)}…` : '—'}
+                  <td
+                    className="mono cell-dim col-secondary"
+                    title={b.api_client_name ? `${b.api_client_name} (${b.api_client_id})` : b.api_client_id || 'Sin tenant asociado'}
+                  >
+                    {b.api_client_id ? b.api_client_name || `${b.api_client_id.slice(0, 8)}…` : '—'}
                   </td>
                   <td className="mono cell-dim col-secondary">{b.reference || '—'}</td>
                   <td className="row-actions">
