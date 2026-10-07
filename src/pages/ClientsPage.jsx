@@ -2,8 +2,11 @@ import { useEffect, useState } from 'react';
 import { AppShell } from '../components/AppShell';
 import { OneTimeSecret } from '../components/OneTimeSecret';
 import { ConfirmDialog } from '../components/ConfirmDialog';
+import { Pagination } from '../components/Pagination';
 import { useToast } from '../components/ToastProvider';
 import { api } from '../api';
+
+const PAGE_SIZE = 25;
 
 function sentence(text) {
   const t = text.trim();
@@ -15,12 +18,17 @@ export function ClientsPage() {
   const [clients, setClients] = useState(null);
   const [error, setError] = useState('');
 
+  // El backend devuelve todos los clientes de una vez (no pagina ni filtra), así
+  // que la búsqueda y las páginas se resuelven aquí, sobre la lista ya cargada.
+  const [search, setSearch] = useState('');
+  const [page, setPage] = useState(1);
+
   const [creating, setCreating] = useState(false);
   const [newName, setNewName] = useState('');
   const [busyID, setBusyID] = useState(null); // id en medio de activar/desactivar/rotar
   // { name, apiKey } del último create/rotate — se muestra una sola vez.
   const [revealedKey, setRevealedKey] = useState(null);
-  // id de la fila a resaltar brevemente tras crearla o rotarle la key.
+  // id de la fila a resaltar brevemente tras crearla o rotarle la clave.
   const [highlightID, setHighlightID] = useState(null);
   // Acción pendiente de confirmar: { title, message, danger, confirmLabel, run }.
   const [confirming, setConfirming] = useState(null);
@@ -29,8 +37,8 @@ export function ClientsPage() {
     setError('');
     try {
       const list = await api.listClients();
-      // El backend devuelve más antiguo primero; acá importa ver lo más
-      // reciente arriba, cerca de donde aparece la key recién creada.
+      // El backend devuelve más antiguo primero; aquí importa ver lo más
+      // reciente arriba, cerca de donde aparece la clave recién creada.
       setClients([...list].reverse());
     } catch (err) {
       setError(sentence(err.data?.error || err.message));
@@ -46,6 +54,17 @@ export function ClientsPage() {
     setTimeout(() => setHighlightID(null), 2200);
   }
 
+  const term = search.trim().toLowerCase();
+  const filtered = clients ? clients.filter((c) => c.name.toLowerCase().includes(term)) : [];
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const currentPage = Math.min(page, totalPages);
+  const visible = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+
+  function onSearchChange(value) {
+    setSearch(value);
+    setPage(1);
+  }
+
   async function onCreate(e) {
     e.preventDefault();
     if (!newName.trim()) return;
@@ -55,6 +74,10 @@ export function ClientsPage() {
       setRevealedKey({ name: client.name, apiKey: client.api_key });
       setNewName('');
       setCreating(false);
+      // El cliente nuevo queda arriba: se limpia la búsqueda y se vuelve a la
+      // primera página para que se vea (y se resalte) en vez de quedar oculto.
+      setSearch('');
+      setPage(1);
       await load();
       flash(client.id);
       notify(`"${client.name}" creado.`);
@@ -151,55 +174,81 @@ export function ClientsPage() {
         <OneTimeSecret label={`Clave de API de "${revealedKey.name}"`} value={revealedKey.apiKey} />
       )}
 
+      {clients && clients.length > 0 && (
+        <form className="form form--search" role="search" onSubmit={(e) => e.preventDefault()}>
+          <input
+            type="search"
+            aria-label="Buscar clientes"
+            placeholder="Buscar por nombre"
+            value={search}
+            onChange={(e) => onSearchChange(e.target.value)}
+          />
+        </form>
+      )}
+
       {error && <p className="error">{error}</p>}
 
       {clients === null && !error && <p>Cargando…</p>}
 
       {clients && clients.length === 0 && <p>No hay clientes todavía.</p>}
 
-      {clients && clients.length > 0 && (
-        <div className="table-wrap">
-        <table className="data-table">
-          <thead>
-            <tr>
-              <th>Nombre</th>
-              <th>Estado</th>
-              <th>Creado</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {clients.map((c) => (
-              <tr key={c.id} className={highlightID === c.id ? 'is-new' : undefined}>
-                <td>{c.name}</td>
-                <td>
-                  <span className={`status-dot status-dot--${c.active ? 'ok' : 'off'}`} />
-                  {c.active ? 'Activo' : 'Inactivo'}
-                </td>
-                <td className="mono">{new Date(c.created_at).toLocaleDateString()}</td>
-                <td className="row-actions">
-                  <button
-                    type="button"
-                    className="btn btn--ghost"
-                    disabled={busyID === c.id}
-                    onClick={() => onToggleActive(c)}
-                  >
-                    {c.active ? 'Desactivar' : 'Activar'}
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn--ghost"
-                    disabled={busyID === c.id}
-                    onClick={() => onRotate(c)}
-                  >
-                    Rotar clave
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        </div>
+      {clients && clients.length > 0 && filtered.length === 0 && (
+        <p>Ningún cliente coincide con "{search.trim()}".</p>
+      )}
+
+      {filtered.length > 0 && (
+        <>
+          <div className="table-wrap">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>Estado</th>
+                  <th>Creado</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {visible.map((c) => (
+                  <tr key={c.id} className={highlightID === c.id ? 'is-new' : undefined}>
+                    <td>{c.name}</td>
+                    <td>
+                      <span className={`status-dot status-dot--${c.active ? 'ok' : 'off'}`} />
+                      {c.active ? 'Activo' : 'Inactivo'}
+                    </td>
+                    <td className="mono">{new Date(c.created_at).toLocaleDateString()}</td>
+                    <td className="row-actions">
+                      <button
+                        type="button"
+                        className="btn btn--ghost"
+                        disabled={busyID === c.id}
+                        onClick={() => onToggleActive(c)}
+                      >
+                        {c.active ? 'Desactivar' : 'Activar'}
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn--ghost"
+                        disabled={busyID === c.id}
+                        onClick={() => onRotate(c)}
+                      >
+                        Rotar clave
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <Pagination
+            page={currentPage}
+            totalPages={totalPages}
+            total={filtered.length}
+            noun={['cliente', 'clientes']}
+            onPage={setPage}
+          />
+        </>
       )}
 
       <ConfirmDialog

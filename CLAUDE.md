@@ -92,11 +92,18 @@ backend, es en ese otro repo/chat — este repo es solo el frontend.
 Plan de 7 pasos acordado con el usuario:
 1. Scaffold del repo — hecho.
 2. Login/logout/sesión — hecho, probado en vivo por el usuario.
-3. Página de Clients (listar + crear + activar/desactivar + rotar key) —
-   hecha, con diálogo de confirmación propio (no `window.confirm`) y
+3. Página de Clientes (listar + crear + activar/desactivar + rotar clave) —
+   hecha, con buscador por nombre y páginas de 25 (componente `Pagination`,
+   compartido con Usuarios). El backend no pagina ni filtra clientes
+   (`GET /admin/clients` devuelve todos), así que la búsqueda y las páginas
+   se resuelven en el navegador sobre la lista ya cargada; si algún día hay
+   miles de clientes reales, habrá que pedir `page`/`page_size`/`q` al backend
+   como en usuarios. Una acción conserva la búsqueda y la página; crear un
+   cliente limpia la búsqueda y vuelve a la primera página para que se vea.
+   Usa un diálogo de confirmación propio (no `window.confirm`) y
    notificaciones tipo "toast". El bug de la pantalla negra está resuelto
    (ver abajo) y el usuario confirmó que el flujo completo de
-   "Desactivar" y "Rotar key" funciona.
+   "Desactivar" y "Rotar clave" funciona.
 4. Página de Users — **hecha**: listado paginado (25 por página) con
    búsqueda, columna "Tenant" (el backend manda `api_client_name` junto a
    cada usuario; si viene vacío se muestra el UUID abreviado), banear/

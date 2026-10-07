@@ -3,6 +3,7 @@ import { AppShell } from '../components/AppShell';
 import { ActionMenu } from '../components/ActionMenu';
 import { ChangeEmailDialog } from '../components/ChangeEmailDialog';
 import { LockoutsDialog } from '../components/LockoutsDialog';
+import { Pagination } from '../components/Pagination';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { useToast } from '../components/ToastProvider';
 import { api } from '../api';
@@ -263,27 +264,13 @@ export function UsersPage() {
           </table>
           </div>
 
-          <nav className="pagination" aria-label="Paginación">
-            <button
-              type="button"
-              className="btn btn--ghost"
-              disabled={page <= 1}
-              onClick={() => setPage((p) => p - 1)}
-            >
-              Anterior
-            </button>
-            <span className="pagination-info">
-              Página {data.page} de {totalPages} ({data.total} {data.total === 1 ? 'usuario' : 'usuarios'})
-            </span>
-            <button
-              type="button"
-              className="btn btn--ghost"
-              disabled={page >= totalPages}
-              onClick={() => setPage((p) => p + 1)}
-            >
-              Siguiente
-            </button>
-          </nav>
+          <Pagination
+            page={page}
+            totalPages={totalPages}
+            total={data.total}
+            noun={['usuario', 'usuarios']}
+            onPage={setPage}
+          />
         </>
       )}
 
