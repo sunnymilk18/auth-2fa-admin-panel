@@ -61,8 +61,13 @@ backend, es en ese otro repo/chat — este repo es solo el frontend.
 - Las secciones del menú y los títulos de página van en español: Clientes,
   Usuarios, Lista negra, Lista blanca, Cuentas (las rutas y los nombres de
   archivo siguen en inglés: `/clients`, `ClientsPage`…). "Rotar clave", "Nuevo
-  cliente", "Correo". Se dejan como están los términos técnicos que el usuario
-  no pidió traducir: tenant, TOTP, PIN, QR, API.
+  cliente", "Correo". Se dejan como están los términos técnicos: **"tenant"
+  se queda como "tenant"** (decisión del usuario, no volver a plantearlo),
+  TOTP, PIN, QR, API.
+- Tablas en pantallas angostas (≤720 px): la tabla de Usuarios pasa a tarjetas
+  con la clase `data-table--cards` y las celdas `cell-email`/`cell-status`/
+  `cell-tenant` (ver el bloque "Tabla en tarjetas" de `styles.css`). Si otra
+  tabla lo necesita, se reutiliza esa misma clase.
 - Todo lo que se pueda pulsar debe verse pulsable sin apuntarlo: borde visible
   (`--control-border`), nunca texto suelto sobre el fondo. Botones secundarios
   = `.btn--ghost` (contorno + fondo tenue), ítems del menú lateral con borde,
@@ -91,7 +96,11 @@ backend, es en ese otro repo/chat — este repo es solo el frontend.
 
 Plan de 7 pasos acordado con el usuario:
 1. Scaffold del repo — hecho.
-2. Login/logout/sesión — hecho, probado en vivo por el usuario.
+2. Login/logout/sesión — hecho, probado en vivo por el usuario. Si la sesión
+   termina a mitad de uso (un 401 con la sesión abierta), el panel vuelve a
+   `/login` con el aviso "Tu sesión terminó…" (`sessionExpired` en
+   `AuthContext`; no sale en una carga normal sin sesión ni al cerrar sesión
+   a mano). Los campos de formulario usan `--field-bg`/`--field-border`.
 3. Página de Clientes (listar + crear + activar/desactivar + rotar clave) —
    hecha, con buscador por nombre y páginas de 25 (componente `Pagination`,
    compartido con Usuarios). El backend no pagina ni filtra clientes

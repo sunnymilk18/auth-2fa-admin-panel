@@ -9,7 +9,7 @@ function sentence(text) {
 }
 
 export function LoginPage() {
-  const { isAuthenticated, loading: sessionLoading, login } = useAuth();
+  const { isAuthenticated, loading: sessionLoading, sessionExpired, login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [totpCode, setTotpCode] = useState('');
@@ -43,6 +43,12 @@ export function LoginPage() {
       <div className="login-card">
         <h1>Panel de administración</h1>
         <p className="subtitle">Inicia sesión con tu cuenta de operador.</p>
+
+        {sessionExpired && (
+          <p className="notice" role="status">
+            Tu sesión terminó. Inicia sesión de nuevo para continuar.
+          </p>
+        )}
 
         <form onSubmit={onSubmit} className="form">
           <label>

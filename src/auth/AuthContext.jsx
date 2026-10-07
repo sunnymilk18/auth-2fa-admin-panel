@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import { createContext, useContext, useEffect, useRef, useState, useCallback } from 'react';
 import { api, configureAuth } from '../api';
 
 const AuthContext = createContext(null);
@@ -11,6 +11,13 @@ const AuthContext = createContext(null);
 export function AuthProvider({ children }) {
   const [identity, setIdentity] = useState(null); // { actor, role } | null
   const [loading, setLoading] = useState(true);
+  // true cuando la sesión terminó a mitad de uso (un 401 con la sesión abierta):
+  // la pantalla de login lo explica en vez de aparecer sin motivo.
+  const [sessionExpired, setSessionExpired] = useState(false);
+  const identityRef = useRef(null);
+  useEffect(() => {
+    identityRef.current = identity;
+  }, [identity]);
 
   const refreshIdentity = useCallback(async () => {
     try {
@@ -30,11 +37,18 @@ export function AuthProvider({ children }) {
   // Un 401 a mitad de uso (sesión expirada, o revocada por otro
   // superadmin) limpia la identidad local — ProtectedRoute hace el resto.
   useEffect(() => {
-    configureAuth({ onUnauthorized: () => setIdentity(null) });
+    configureAuth({
+      onUnauthorized: () => {
+        // Solo si había sesión: un 401 al cargar la página sin sesión no es una caducidad.
+        if (identityRef.current) setSessionExpired(true);
+        setIdentity(null);
+      },
+    });
   }, []);
 
   async function login(email, password, totpCode) {
     await api.login({ email, password, totp_code: totpCode });
+    setSessionExpired(false);
     await refreshIdentity();
   }
 
@@ -44,6 +58,7 @@ export function AuthProvider({ children }) {
     } catch {
       // best-effort: igual limpiamos la sesión local
     }
+    setSessionExpired(false);
     setIdentity(null);
   }
 
@@ -52,6 +67,7 @@ export function AuthProvider({ children }) {
     role: identity?.role || null,
     isAuthenticated: Boolean(identity),
     loading,
+    sessionExpired,
     login,
     logout,
   };

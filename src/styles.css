@@ -12,6 +12,10 @@
      tarjeta o separador, para que se lea como algo que se puede pulsar. */
   --control-border: #525d72;
   --control-border-hover: #7a86a0;
+  /* Campos de texto: fondo más oscuro que la tarjeta o la página y borde propio,
+     para que se distingan de lo que los rodea (antes casi no se veían). */
+  --field-bg: #0d1015;
+  --field-border: #434c60;
   --text: #e4e7ec;
   --text-dim: #9099a8;
 
@@ -320,17 +324,35 @@ a {
   font-family: var(--font-sans);
   font-size: 15px;
   padding: 10px 12px;
-  border: 1px solid var(--border);
+  border: 1px solid var(--field-border);
   border-radius: var(--radius);
-  background: var(--surface);
+  background: var(--field-bg);
   color: var(--text);
   transition: border-color 0.15s var(--ease), box-shadow 0.15s var(--ease);
+}
+.form select:hover:not(:focus-visible),
+.form input:hover:not(:focus-visible) {
+  border-color: var(--control-border-hover);
+}
+.form input::placeholder {
+  color: #6f788a;
 }
 .form select:focus-visible,
 .form input:focus-visible {
   outline: none;
   border-color: var(--admin);
   box-shadow: 0 0 0 3px var(--admin-soft);
+}
+
+/* Aviso informativo (no es un error): p. ej. "tu sesión terminó". */
+.notice {
+  margin: 0 0 16px;
+  padding: 10px 12px;
+  border: 1px solid rgba(79, 184, 174, 0.4);
+  border-radius: var(--radius);
+  background: var(--admin-soft);
+  color: var(--text);
+  font-size: 14px;
 }
 
 .error {
@@ -670,6 +692,81 @@ a {
 }
 .lockout-list .lockout-state {
   color: var(--text-dim);
+}
+
+/* --- Tabla en tarjetas (pantallas angostas) --------------------------------
+   Una tabla con correos largos no cabe en un teléfono: cada fila pasa a ser una
+   tarjeta (correo arriba; estado y tenant debajo; acciones a la derecha). Se
+   activa con la clase data-table--cards y las celdas cell-email/-status/-tenant. */
+@media (max-width: 720px) {
+  .data-table--cards,
+  .data-table--cards tbody {
+    display: block;
+  }
+  .data-table--cards thead {
+    display: none;
+  }
+  .data-table--cards tr {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      'email email'
+      'status actions'
+      'tenant tenant';
+    gap: 6px 12px;
+    align-items: center;
+    margin-bottom: 10px;
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--surface);
+  }
+  .data-table--cards tbody tr:hover {
+    background: var(--surface);
+  }
+  .data-table--cards td {
+    display: block;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+  }
+  .data-table--cards td.cell-email {
+    grid-area: email;
+    font-size: 13px;
+  }
+  .data-table--cards td.cell-status {
+    grid-area: status;
+  }
+  .data-table--cards td.cell-tenant {
+    display: block; /* gana a .col-secondary, que lo oculta en anchos medianos */
+    grid-area: tenant;
+    max-width: none;
+    font-size: 12px;
+  }
+  .data-table--cards td.cell-tenant::before {
+    content: 'Tenant ';
+    font-family: var(--font-sans);
+    color: var(--text-dim);
+    opacity: 0.7;
+  }
+  .data-table--cards td.row-actions {
+    grid-area: actions;
+    position: static;
+    padding: 0;
+    background: none;
+    box-shadow: none;
+  }
+  .pagination-info {
+    font-size: 13px;
+    text-align: center;
+  }
+  /* El resaltado de una fila recién modificada va en la tarjeta, no en cada celda. */
+  .data-table--cards tr.is-new td {
+    animation: none;
+  }
+  .data-table--cards tr.is-new {
+    animation: row-highlight 3.5s var(--ease);
+  }
 }
 
 /* --- Menú de acciones de una fila ---------------------------------------- */

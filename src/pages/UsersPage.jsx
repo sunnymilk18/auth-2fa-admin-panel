@@ -218,7 +218,7 @@ export function UsersPage() {
       {data && data.users.length > 0 && (
         <>
           <div className="table-wrap">
-          <table className="data-table">
+          <table className="data-table data-table--cards">
             <thead>
               <tr>
                 <th>Correo</th>
@@ -232,17 +232,17 @@ export function UsersPage() {
             <tbody>
               {data.users.map((u) => (
                 <tr key={u.id} className={highlightID === u.id ? 'is-new' : undefined}>
-                  <td className="mono cell-wrap">{u.email}</td>
+                  <td className="mono cell-wrap cell-email">{u.email}</td>
                   <td className="cell-dim col-secondary">{u.username}</td>
                   <td
-                    className="mono cell-dim col-secondary cell-clip"
+                    className="mono cell-dim col-secondary cell-clip cell-tenant"
                     title={
                       u.api_client_name ? `${u.api_client_name} (${u.api_client_id})` : u.api_client_id || 'Sin tenant asociado'
                     }
                   >
                     {tenantLabel(u)}
                   </td>
-                  <td>
+                  <td className="cell-status">
                     <span className={`status-dot status-dot--${u.is_active ? 'ok' : 'off'}`} />
                     {u.is_active ? 'Activo' : 'Baneado'}
                   </td>
