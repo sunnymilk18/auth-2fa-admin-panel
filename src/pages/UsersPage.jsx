@@ -201,7 +201,14 @@ export function UsersPage() {
           aria-label="Buscar usuarios"
           placeholder="Buscar por correo, usuario o RUT"
           value={searchInput}
-          onChange={(e) => setSearchInput(e.target.value)}
+          onChange={(e) => {
+            setSearchInput(e.target.value);
+            // Al vaciar el campo se vuelve a la lista completa, sin pulsar "Buscar".
+            if (e.target.value === '' && query !== '') {
+              setPage(1);
+              setQuery('');
+            }
+          }}
         />
         <button type="submit" className="btn">
           Buscar
