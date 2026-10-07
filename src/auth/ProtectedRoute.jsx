@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
+import { LoadingScreen } from '../components/LoadingScreen';
 import { useToast } from '../components/ToastProvider';
 
 // Protección del lado del cliente: sin sesión válida, redirige a /login.
@@ -23,13 +24,7 @@ export function ProtectedRoute({ children, roles }) {
     }
   }, [forbidden, notify]);
 
-  if (loading) {
-    return (
-      <div className="container">
-        <p>Cargando…</p>
-      </div>
-    );
-  }
+  if (loading) return <LoadingScreen />;
   if (!isAuthenticated) return <Navigate to="/login" replace />;
   if (forbidden) return <Navigate to="/" replace />;
   return children;

@@ -5,6 +5,53 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Panel de administración</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <!-- Marcador de carga: se ve desde el primer instante, antes de que cargue el
+         JavaScript, con el fondo del panel (sin pantalla en blanco). React lo
+         reemplaza al arrancar; LoadingScreen.jsx dibuja lo mismo. Los colores
+         repiten los tokens de styles.css (--bg, --text-dim, --admin). -->
+    <style>
+      html,
+      body {
+        margin: 0;
+        background: #12151b;
+      }
+      .splash {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 14px;
+        color: #9099a8;
+        font: 14px/1.5 'IBM Plex Sans', system-ui, sans-serif;
+      }
+      .splash-lock {
+        width: 52px;
+        height: 52px;
+        opacity: 0;
+        animation: splash-in 0.4s ease 0.15s forwards;
+      }
+      .splash-text {
+        margin: 0;
+        opacity: 0;
+        animation: splash-in 0.4s ease 1.2s forwards;
+      }
+      @keyframes splash-in {
+        to {
+          opacity: 1;
+        }
+      }
+      @keyframes splash-breathe {
+        50% {
+          opacity: 0.55;
+        }
+      }
+      @media (prefers-reduced-motion: no-preference) {
+        .splash-lock {
+          animation: splash-in 0.4s ease 0.15s forwards, splash-breathe 2.2s ease-in-out 0.6s infinite;
+        }
+      }
+    </style>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -13,7 +60,17 @@
     />
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div class="splash" role="status" aria-live="polite">
+        <svg class="splash-lock" viewBox="0 0 64 64" aria-hidden="true">
+          <path d="M22 29V22a10 10 0 0 1 20 0v7" fill="none" stroke="#4fb8ae" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+          <rect x="15" y="29" width="34" height="23" rx="5" fill="#1b1f27" stroke="#4fb8ae" stroke-width="4" />
+          <circle cx="32" cy="39.5" r="3" fill="#4fb8ae" />
+          <path d="M32 42v5" stroke="#4fb8ae" stroke-width="3" stroke-linecap="round" />
+        </svg>
+        <p class="splash-text">Cargando…</p>
+      </div>
+    </div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
