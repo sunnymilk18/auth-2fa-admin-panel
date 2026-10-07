@@ -70,6 +70,7 @@ backend, es en ese otro repo/chat — este repo es solo el frontend.
   bloqueo del scroll de fondo. En una confirmación destructiva el foco empieza
   en "Cancelar". Para un diálogo con campos, `<Modal as="form" …>`.
 - Cabecera y listas: cada sección abre con `<PageHeader>` (título, descripción y el dato clave a la derecha), las listas sin datos usan `<EmptyState>` con ícono y una explicación, y las tablas van dentro de `table-wrap--card`. El pie del menú muestra la API conectada (consulta el endpoint de salud) y el menú queda fijo en pantallas anchas.
+- `ErrorBoundary` (en `main.jsx`) muestra "Algo salió mal" en vez de dejar la página en blanco si un componente falla. El favicon es `public/favicon.svg` (el candado, en teal).
 - Accesibilidad: el título de cada sección es `<PageTitle>` (`h1`; pone el título de la pestaña y lleva el foco al entrar), nunca un `h2` suelto. La columna de acciones lleva `<th><span className="sr-only">Acciones</span></th>`, los errores `role="alert"` y el menú lateral `aria-label`. Los bordes de controles y campos (`--control-border`, `--field-border`) están medidos a ≥3:1 contra el fondo y el placeholder a ≥4,5:1; no oscurecerlos.
 - Tablas en pantallas angostas (≤720 px): la tabla de Usuarios pasa a tarjetas
   con la clase `data-table--cards` y las celdas `cell-email`/`cell-status`/
