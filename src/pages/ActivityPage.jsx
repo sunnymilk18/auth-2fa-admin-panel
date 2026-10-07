@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { AppShell } from '../components/AppShell';
 import { PageHeader } from '../components/PageHeader';
 import { EmptyState } from '../components/EmptyState';
+import { ListSkeleton } from '../components/ListSkeleton';
 import { Pagination } from '../components/Pagination';
 import { api } from '../api';
 import { ACTION_GROUPS, SHARED_TOKEN_ACTOR, actionLabel, targetTypeLabel } from '../utils/audit';
@@ -125,7 +126,7 @@ export function ActivityPage() {
       </form>
 
       {error && <p className="error" role="alert">{error}</p>}
-      {data === null && !error && <p>Cargando…</p>}
+      {data === null && !error && <ListSkeleton />}
 
       {data && data.entries.length === 0 &&
         (hasFilters ? (

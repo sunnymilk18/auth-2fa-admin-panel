@@ -4,6 +4,7 @@ import { PageHeader } from '../components/PageHeader';
 import { PasswordField } from '../components/PasswordField';
 import { secretFrom } from '../utils/totp';
 import { EmptyState } from '../components/EmptyState';
+import { ListSkeleton } from '../components/ListSkeleton';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { OneTimeSecret } from '../components/OneTimeSecret';
 import { QrCode } from '../components/QrCode';
@@ -185,7 +186,7 @@ export function AccountsPage() {
       )}
 
       {error && <p className="error" role="alert">{error}</p>}
-      {accounts === null && !error && <p>Cargando…</p>}
+      {accounts === null && !error && <ListSkeleton />}
       {accounts && accounts.length === 0 && (
         <EmptyState icon="lock" title="No hay cuentas">
           Crea la primera con «Nueva cuenta».

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { AppShell } from '../components/AppShell';
 import { PageHeader } from '../components/PageHeader';
 import { EmptyState } from '../components/EmptyState';
+import { ListSkeleton } from '../components/ListSkeleton';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { useToast } from '../components/ToastProvider';
 import { api } from '../api';
@@ -111,7 +112,7 @@ export function AllowlistPage() {
       </form>
 
       {error && <p className="error" role="alert">{error}</p>}
-      {ips === null && !error && <p>Cargando…</p>}
+      {ips === null && !error && <ListSkeleton />}
       {ips && ips.length === 0 && (
         <EmptyState icon="shield" title="La lista blanca está vacía">
           Agrega una IP para que nunca se sancione ni se banee. Úsalo con cuidado: la exención vale para toda la

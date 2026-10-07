@@ -602,6 +602,54 @@ h1[tabindex='-1']:focus {
   }
 }
 
+/* Esqueleto de una lista que carga. Aparece tras 300 ms (backwards: antes de eso, invisible). */
+.skeleton {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  overflow: hidden;
+}
+.skeleton-head {
+  height: 38px;
+  background: var(--surface-raised);
+}
+.skeleton-row {
+  display: flex;
+  align-items: center;
+  gap: 5%;
+  padding: 0 14px;
+  height: 50px;
+  border-top: 1px solid var(--border);
+}
+.skeleton-bar {
+  height: 11px;
+  border-radius: 6px;
+  background: var(--surface-raised);
+}
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes skeleton-in {
+    from {
+      opacity: 0;
+    }
+  }
+  @keyframes skeleton-shimmer {
+    from {
+      background-position: 120% 0;
+    }
+    to {
+      background-position: -120% 0;
+    }
+  }
+  .skeleton {
+    animation: skeleton-in 0.3s ease 0.3s backwards;
+  }
+  .skeleton-bar {
+    background: linear-gradient(90deg, var(--surface-raised) 30%, var(--control-border) 50%, var(--surface-raised) 70%);
+    background-size: 240% 100%;
+    animation: skeleton-shimmer 1.6s linear infinite;
+  }
+}
+
 /* Lista sin elementos. */
 .empty-state {
   display: flex;

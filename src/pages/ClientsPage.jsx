@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { AppShell } from '../components/AppShell';
 import { PageHeader } from '../components/PageHeader';
 import { EmptyState } from '../components/EmptyState';
+import { ListSkeleton } from '../components/ListSkeleton';
 import { OneTimeSecret } from '../components/OneTimeSecret';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { Pagination } from '../components/Pagination';
@@ -193,7 +194,7 @@ export function ClientsPage() {
 
       {error && <p className="error" role="alert">{error}</p>}
 
-      {clients === null && !error && <p>Cargando…</p>}
+      {clients === null && !error && <ListSkeleton />}
 
       {clients && clients.length === 0 && (
         <EmptyState icon="box" title="Aún no hay clientes">

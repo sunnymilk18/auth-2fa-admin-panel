@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { AppShell } from '../components/AppShell';
 import { PageHeader } from '../components/PageHeader';
 import { EmptyState } from '../components/EmptyState';
+import { ListSkeleton } from '../components/ListSkeleton';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { useToast } from '../components/ToastProvider';
 import { api } from '../api';
@@ -118,7 +119,7 @@ export function BlacklistPage() {
       </form>
 
       {error && <p className="error" role="alert">{error}</p>}
-      {bans === null && !error && <p>Cargando…</p>}
+      {bans === null && !error && <ListSkeleton />}
       {bans && bans.length === 0 && (
         <EmptyState icon="shield-check" title="Ninguna IP baneada">
           Cuando una IP supere el límite de intentos fallidos aparecerá aquí, con su nivel y cuándo vence el baneo.

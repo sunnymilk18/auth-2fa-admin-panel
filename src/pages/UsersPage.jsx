@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { AppShell } from '../components/AppShell';
 import { PageHeader } from '../components/PageHeader';
 import { EmptyState } from '../components/EmptyState';
+import { ListSkeleton } from '../components/ListSkeleton';
 import { ActionMenu } from '../components/ActionMenu';
 import { ChangeEmailDialog } from '../components/ChangeEmailDialog';
 import { LockoutsDialog } from '../components/LockoutsDialog';
@@ -224,7 +225,7 @@ export function UsersPage() {
 
       {error && <p className="error" role="alert">{error}</p>}
 
-      {data === null && !error && <p>Cargando…</p>}
+      {data === null && !error && <ListSkeleton />}
 
       {data && data.users.length === 0 &&
         (query ? (
