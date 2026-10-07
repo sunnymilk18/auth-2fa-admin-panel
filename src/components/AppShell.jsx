@@ -6,11 +6,11 @@ import { useAuth } from '../auth/AuthContext';
 // queda null hasta que cada pantalla exista de verdad (próximos pasos);
 // mientras tanto el ítem se ve pero no lleva a ningún lado.
 const NAV_ITEMS = [
-  { label: 'Clients', path: '/clients', roles: ['superadmin'] },
-  { label: 'Users', path: '/users', roles: ['admin', 'superadmin'] },
-  { label: 'Blacklist', path: '/blacklist', roles: ['admin', 'superadmin'] },
-  { label: 'Allowlist', path: '/allowlist', roles: ['superadmin'] },
-  { label: 'Accounts', path: '/accounts', roles: ['superadmin'] },
+  { label: 'Clientes', path: '/clients', roles: ['superadmin'] },
+  { label: 'Usuarios', path: '/users', roles: ['admin', 'superadmin'] },
+  { label: 'Lista negra', path: '/blacklist', roles: ['admin', 'superadmin'] },
+  { label: 'Lista blanca', path: '/allowlist', roles: ['superadmin'] },
+  { label: 'Cuentas', path: '/accounts', roles: ['superadmin'] },
 ];
 
 export function AppShell({ children }) {

@@ -110,7 +110,7 @@ export function AccountsPage() {
   return (
     <AppShell>
       <div className="page-header">
-        <h2>Accounts</h2>
+        <h2>Cuentas</h2>
         <button type="button" className="btn btn--primary" onClick={() => setCreating((v) => !v)}>
           {creating ? 'Cancelar' : 'Nueva cuenta'}
         </button>

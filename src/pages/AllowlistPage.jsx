@@ -91,7 +91,7 @@ export function AllowlistPage() {
     <AppShell>
       <div className="page-header">
         <div className="page-title">
-          <h2>Allowlist</h2>
+          <h2>Lista blanca</h2>
           <span className="role-badge role-badge--superadmin">superadmin</span>
         </div>
       </div>

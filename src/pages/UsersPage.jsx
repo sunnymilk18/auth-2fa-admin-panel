@@ -190,7 +190,7 @@ export function UsersPage() {
   return (
     <AppShell>
       <div className="page-header">
-        <h2>Users</h2>
+        <h2>Usuarios</h2>
       </div>
 
       <form onSubmit={onSearch} className="form form--search" role="search">

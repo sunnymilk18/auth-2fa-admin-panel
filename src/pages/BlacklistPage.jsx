@@ -98,7 +98,7 @@ export function BlacklistPage() {
   return (
     <AppShell>
       <div className="page-header">
-        <h2>Blacklist</h2>
+        <h2>Lista negra</h2>
       </div>
 
       <p className="section-note">

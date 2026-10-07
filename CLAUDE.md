@@ -58,6 +58,11 @@ backend, es en ese otro repo/chat — este repo es solo el frontend.
   distinto de `#E5484D`, reservado para acciones destructivas/peligro),
   IBM Plex Sans + IBM Plex Mono. Mantener esta paleta en páginas nuevas,
   no reinventarla por página.
+- Las secciones del menú y los títulos de página van en español: Clientes,
+  Usuarios, Lista negra, Lista blanca, Cuentas (las rutas y los nombres de
+  archivo siguen en inglés: `/clients`, `ClientsPage`…). "Rotar clave", "Nuevo
+  cliente", "Correo". Se dejan como están los términos técnicos que el usuario
+  no pidió traducir: tenant, TOTP, PIN, QR, API.
 - Todo lo que se pueda pulsar debe verse pulsable sin apuntarlo: borde visible
   (`--control-border`), nunca texto suelto sobre el fondo. Botones secundarios
   = `.btn--ghost` (contorno + fondo tenue), ítems del menú lateral con borde,

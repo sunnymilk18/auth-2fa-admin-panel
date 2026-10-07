@@ -70,7 +70,7 @@ export function ClientsPage() {
     }
     setConfirming({
       title: `Desactivar "${client.name}"`,
-      message: 'Su API key deja de funcionar al instante. Puedes reactivarlo cuando quieras.',
+      message: 'Su clave de API deja de funcionar al instante. Puedes reactivarlo cuando quieras.',
       confirmLabel: 'Desactivar',
       danger: true,
       run: () => runToggleActive(client),
@@ -97,9 +97,9 @@ export function ClientsPage() {
 
   function onRotate(client) {
     setConfirming({
-      title: `Rotar la API key de "${client.name}"`,
-      message: 'La key anterior deja de funcionar al instante.',
-      confirmLabel: 'Rotar key',
+      title: `Rotar la clave de API de "${client.name}"`,
+      message: 'La clave anterior deja de funcionar al instante.',
+      confirmLabel: 'Rotar clave',
       danger: true,
       run: async () => {
         setConfirming(null);
@@ -109,10 +109,10 @@ export function ClientsPage() {
           const res = await api.rotateClient(client.id);
           setRevealedKey({ name: client.name, apiKey: res.api_key });
           flash(client.id);
-          notify(`Key de "${client.name}" rotada.`);
+          notify(`Clave de "${client.name}" rotada.`);
         } catch (err) {
           setError(sentence(err.data?.error || err.message));
-          notify(`No se pudo rotar la key de "${client.name}".`, { type: 'error' });
+          notify(`No se pudo rotar la clave de "${client.name}".`, { type: 'error' });
         } finally {
           setBusyID(null);
         }
@@ -123,9 +123,9 @@ export function ClientsPage() {
   return (
     <AppShell>
       <div className="page-header">
-        <h2>Clients</h2>
+        <h2>Clientes</h2>
         <button type="button" className="btn btn--primary" onClick={() => setCreating((v) => !v)}>
-          {creating ? 'Cancelar' : 'Nuevo client'}
+          {creating ? 'Cancelar' : 'Nuevo cliente'}
         </button>
       </div>
 
@@ -148,14 +148,14 @@ export function ClientsPage() {
       )}
 
       {revealedKey && (
-        <OneTimeSecret label={`API key de "${revealedKey.name}"`} value={revealedKey.apiKey} />
+        <OneTimeSecret label={`Clave de API de "${revealedKey.name}"`} value={revealedKey.apiKey} />
       )}
 
       {error && <p className="error">{error}</p>}
 
       {clients === null && !error && <p>Cargando…</p>}
 
-      {clients && clients.length === 0 && <p>No hay clients todavía.</p>}
+      {clients && clients.length === 0 && <p>No hay clientes todavía.</p>}
 
       {clients && clients.length > 0 && (
         <div className="table-wrap">
@@ -192,7 +192,7 @@ export function ClientsPage() {
                     disabled={busyID === c.id}
                     onClick={() => onRotate(c)}
                   >
-                    Rotar key
+                    Rotar clave
                   </button>
                 </td>
               </tr>

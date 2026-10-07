@@ -46,7 +46,7 @@ export function LoginPage() {
 
         <form onSubmit={onSubmit} className="form">
           <label>
-            Email
+            Correo
             <input
               type="email"
               required
