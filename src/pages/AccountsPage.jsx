@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { AppShell } from '../components/AppShell';
-import { PageTitle } from '../components/PageTitle';
+import { PageHeader } from '../components/PageHeader';
+import { EmptyState } from '../components/EmptyState';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { OneTimeSecret } from '../components/OneTimeSecret';
 import { QrCode } from '../components/QrCode';
@@ -110,12 +111,15 @@ export function AccountsPage() {
 
   return (
     <AppShell>
-      <div className="page-header">
-        <PageTitle>Cuentas</PageTitle>
+      <PageHeader
+        title="Cuentas"
+        description="Los operadores que pueden entrar a este panel. Cada cuenta usa correo, contraseña y código TOTP."
+        stat={accounts ? { value: accounts.length, label: accounts.length === 1 ? 'cuenta' : 'cuentas' } : null}
+      >
         <button type="button" className="btn btn--primary" onClick={() => setCreating((v) => !v)}>
           {creating ? 'Cancelar' : 'Nueva cuenta'}
         </button>
-      </div>
+      </PageHeader>
 
       {creating && (
         <form onSubmit={onCreate} className="form form--inline">
@@ -193,10 +197,14 @@ export function AccountsPage() {
 
       {error && <p className="error" role="alert">{error}</p>}
       {accounts === null && !error && <p>Cargando…</p>}
-      {accounts && accounts.length === 0 && <p>No hay cuentas todavía.</p>}
+      {accounts && accounts.length === 0 && (
+        <EmptyState icon="lock" title="No hay cuentas">
+          Crea la primera con «Nueva cuenta».
+        </EmptyState>
+      )}
 
       {accounts && accounts.length > 0 && (
-        <div className="table-wrap">
+        <div className="table-wrap table-wrap--card">
           <table className="data-table">
             <thead>
               <tr>

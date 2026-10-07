@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { AppShell } from '../components/AppShell';
-import { PageTitle } from '../components/PageTitle';
+import { PageHeader } from '../components/PageHeader';
+import { EmptyState } from '../components/EmptyState';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { useToast } from '../components/ToastProvider';
 import { api } from '../api';
@@ -98,14 +99,11 @@ export function BlacklistPage() {
 
   return (
     <AppShell>
-      <div className="page-header">
-        <PageTitle>Lista negra</PageTitle>
-      </div>
-
-      <p className="section-note">
-        IPs bloqueadas por intentos abusivos, de todos los tenants. Si una IP bloquea a usuarios legítimos, levanta su
-        baneo.
-      </p>
+      <PageHeader
+        title="Lista negra"
+        description="IPs bloqueadas por intentos abusivos, de todos los tenants. Si una IP bloquea a usuarios legítimos, levanta su baneo."
+        stat={bans ? { value: bans.length, label: bans.length === 1 ? 'IP baneada' : 'IPs baneadas' } : null}
+      />
 
       <form onSubmit={onUnbanSubmit} className="form form--search">
         <input
@@ -121,10 +119,14 @@ export function BlacklistPage() {
 
       {error && <p className="error" role="alert">{error}</p>}
       {bans === null && !error && <p>Cargando…</p>}
-      {bans && bans.length === 0 && <p>No hay baneos activos.</p>}
+      {bans && bans.length === 0 && (
+        <EmptyState icon="shield-check" title="Ninguna IP baneada">
+          Cuando una IP supere el límite de intentos fallidos aparecerá aquí, con su nivel y cuándo vence el baneo.
+        </EmptyState>
+      )}
 
       {bans && bans.length > 0 && (
-        <div className="table-wrap">
+        <div className="table-wrap table-wrap--card">
           <table className="data-table">
             <thead>
               <tr>

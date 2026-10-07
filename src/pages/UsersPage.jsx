@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { AppShell } from '../components/AppShell';
-import { PageTitle } from '../components/PageTitle';
+import { PageHeader } from '../components/PageHeader';
+import { EmptyState } from '../components/EmptyState';
 import { ActionMenu } from '../components/ActionMenu';
 import { ChangeEmailDialog } from '../components/ChangeEmailDialog';
 import { LockoutsDialog } from '../components/LockoutsDialog';
@@ -191,9 +192,15 @@ export function UsersPage() {
 
   return (
     <AppShell>
-      <div className="page-header">
-        <PageTitle>Usuarios</PageTitle>
-      </div>
+      <PageHeader
+        title="Usuarios"
+        description="Las personas que usan los sistemas conectados a la API. Desde aquí puedes banearlas, corregir su correo y gestionar su PIN y su TOTP."
+        stat={
+          data
+            ? { value: data.total, label: query ? (data.total === 1 ? 'resultado' : 'resultados') : data.total === 1 ? 'usuario' : 'usuarios' }
+            : null
+        }
+      />
 
       <form onSubmit={onSearch} className="form form--search" role="search">
         <input
@@ -219,13 +226,20 @@ export function UsersPage() {
 
       {data === null && !error && <p>Cargando…</p>}
 
-      {data && data.users.length === 0 && (
-        <p>{query ? `Ningún usuario coincide con "${query}".` : 'No hay usuarios todavía.'}</p>
-      )}
+      {data && data.users.length === 0 &&
+        (query ? (
+          <EmptyState icon="search" title="Sin resultados">
+            Ningún usuario coincide con "{query}". Prueba con otro correo, usuario o RUT.
+          </EmptyState>
+        ) : (
+          <EmptyState icon="mail" title="Aún no hay usuarios">
+            Aparecerán aquí cuando las personas se registren en alguno de los sistemas conectados.
+          </EmptyState>
+        ))}
 
       {data && data.users.length > 0 && (
         <>
-          <div className="table-wrap">
+          <div className="table-wrap table-wrap--card">
           <table className="data-table data-table--cards">
             <thead>
               <tr>

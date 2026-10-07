@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { AppShell } from '../components/AppShell';
-import { PageTitle } from '../components/PageTitle';
+import { PageHeader } from '../components/PageHeader';
+import { EmptyState } from '../components/EmptyState';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { useToast } from '../components/ToastProvider';
 import { api } from '../api';
@@ -90,17 +91,12 @@ export function AllowlistPage() {
 
   return (
     <AppShell>
-      <div className="page-header">
-        <div className="page-title">
-          <PageTitle>Lista blanca</PageTitle>
-          <span className="role-badge role-badge--superadmin">superadmin</span>
-        </div>
-      </div>
-
-      <p className="section-note">
-        IPs que nunca se sancionan ni se banean (lista blanca). La exención vale para toda la plataforma, no solo para
-        un tenant.
-      </p>
+      <PageHeader
+        title="Lista blanca"
+        badge={<span className="role-badge role-badge--superadmin">superadmin</span>}
+        description="IPs que nunca se sancionan ni se banean. La exención vale para toda la plataforma, no solo para un tenant."
+        stat={ips ? { value: ips.length, label: ips.length === 1 ? 'IP exenta' : 'IPs exentas' } : null}
+      />
 
       <form onSubmit={onSubmit} className="form form--search">
         <input
@@ -116,10 +112,15 @@ export function AllowlistPage() {
 
       {error && <p className="error" role="alert">{error}</p>}
       {ips === null && !error && <p>Cargando…</p>}
-      {ips && ips.length === 0 && <p>La lista blanca está vacía.</p>}
+      {ips && ips.length === 0 && (
+        <EmptyState icon="shield" title="La lista blanca está vacía">
+          Agrega una IP para que nunca se sancione ni se banee. Úsalo con cuidado: la exención vale para toda la
+          plataforma.
+        </EmptyState>
+      )}
 
       {ips && ips.length > 0 && (
-        <div className="table-wrap">
+        <div className="table-wrap table-wrap--card">
           <table className="data-table">
             <thead>
               <tr>

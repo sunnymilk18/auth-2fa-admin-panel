@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 
@@ -12,6 +12,52 @@ export const NAV_ITEMS = [
   { label: 'Lista blanca', path: '/allowlist', roles: ['superadmin'], description: 'IPs exentas de sanciones en toda la plataforma.' },
   { label: 'Cuentas', path: '/accounts', roles: ['superadmin'], description: 'Crea, reactiva y revoca cuentas de operadores.' },
 ];
+
+// Pie del menú: a qué API está conectado el panel y si responde (GET /health,
+// público). Sirve para distinguir de un vistazo producción de un entorno local.
+function ApiStatus() {
+  const base = import.meta.env.VITE_API_URL || '';
+  const [ok, setOk] = useState(null); // null = aún sin saber
+
+  useEffect(() => {
+    let alive = true;
+    async function ping() {
+      try {
+        const res = await fetch(`${base}/health`);
+        if (alive) setOk(res.ok);
+      } catch {
+        if (alive) setOk(false);
+      }
+    }
+    ping();
+    const id = setInterval(ping, 30000);
+    return () => {
+      alive = false;
+      clearInterval(id);
+    };
+  }, [base]);
+
+  let host = base;
+  try {
+    host = new URL(base).host;
+  } catch {
+    // se muestra tal cual
+  }
+  const state = ok === null ? 'off' : ok ? 'ok' : 'bad';
+  const text = ok === null ? 'Conectando…' : ok ? 'API conectada' : 'Sin conexión con la API';
+
+  return (
+    <div className="shell-api" role="status">
+      <span className="shell-api-state">
+        <span className={`status-dot status-dot--${state}`} aria-hidden="true" />
+        {text}
+      </span>
+      <span className="shell-api-host mono" title={base}>
+        {host}
+      </span>
+    </div>
+  );
+}
 
 export function AppShell({ children }) {
   const { actor, role, logout } = useAuth();
@@ -49,6 +95,7 @@ export function AppShell({ children }) {
             </span>
           )
         )}
+        <ApiStatus />
       </nav>
       <div className="shell-main">
         <header className="shell-topbar">

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { AppShell } from '../components/AppShell';
-import { PageTitle } from '../components/PageTitle';
+import { PageHeader } from '../components/PageHeader';
+import { EmptyState } from '../components/EmptyState';
 import { OneTimeSecret } from '../components/OneTimeSecret';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { Pagination } from '../components/Pagination';
@@ -146,12 +147,15 @@ export function ClientsPage() {
 
   return (
     <AppShell>
-      <div className="page-header">
-        <PageTitle>Clientes</PageTitle>
+      <PageHeader
+        title="Clientes"
+        description="Los sistemas que usan la API. Cada cliente tiene su propia clave."
+        stat={clients ? { value: clients.length, label: clients.length === 1 ? 'cliente' : 'clientes' } : null}
+      >
         <button type="button" className="btn btn--primary" onClick={() => setCreating((v) => !v)}>
           {creating ? 'Cancelar' : 'Nuevo cliente'}
         </button>
-      </div>
+      </PageHeader>
 
       {creating && (
         <form onSubmit={onCreate} className="form form--inline">
@@ -191,15 +195,21 @@ export function ClientsPage() {
 
       {clients === null && !error && <p>Cargando…</p>}
 
-      {clients && clients.length === 0 && <p>No hay clientes todavía.</p>}
+      {clients && clients.length === 0 && (
+        <EmptyState icon="box" title="Aún no hay clientes">
+          Crea el primero con «Nuevo cliente»: se genera su clave de API y se muestra una sola vez.
+        </EmptyState>
+      )}
 
       {clients && clients.length > 0 && filtered.length === 0 && (
-        <p>Ningún cliente coincide con "{search.trim()}".</p>
+        <EmptyState icon="search" title="Sin resultados">
+          Ningún cliente coincide con "{search.trim()}". Prueba con otro nombre.
+        </EmptyState>
       )}
 
       {filtered.length > 0 && (
         <>
-          <div className="table-wrap">
+          <div className="table-wrap table-wrap--card">
             <table className="data-table">
               <thead>
                 <tr>

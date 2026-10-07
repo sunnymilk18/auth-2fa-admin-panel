@@ -127,6 +127,11 @@ a {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  /* El menú se queda a la vista aunque la página sea larga; así el pie no se pierde abajo. */
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  align-self: start;
 }
 
 .shell-brand {
@@ -189,6 +194,26 @@ a {
   border-color: var(--border);
 }
 
+/* Pie del menú: a qué API está conectado el panel. */
+.shell-api {
+  margin-top: auto;
+  padding: 14px 10px 0;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 13px;
+  color: var(--text-dim);
+}
+.shell-api-state {
+  display: flex;
+  align-items: center;
+}
+.shell-api-host {
+  overflow-wrap: anywhere;
+  font-size: 12px;
+}
+
 .shell-main {
   display: flex;
   flex-direction: column;
@@ -222,6 +247,8 @@ a {
     grid-template-rows: auto 1fr;
   }
   .shell-nav {
+    position: static;
+    height: auto;
     flex-direction: row;
     flex-wrap: wrap;
     align-items: center;
@@ -235,6 +262,9 @@ a {
     padding-bottom: 6px;
   }
   .shell-nav-item::before {
+    display: none;
+  }
+  .shell-api {
     display: none;
   }
   .shell-content {
@@ -471,11 +501,119 @@ h1[tabindex='-1']:focus {
   gap: 12px;
 }
 
-.page-header {
+/* Cabecera de sección: título y descripción a la izquierda, dato clave y acciones a la derecha. */
+.page-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px 24px;
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+}
+.page-head-main {
+  min-width: 0;
+  flex: 1 1 320px;
+}
+.page-head-main h1 {
+  font-size: 24px;
+}
+.page-desc {
+  margin: 6px 0 0;
+  max-width: 62ch;
+  color: var(--text-dim);
+  font-size: 14px;
+}
+.page-head-side {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 20px;
+  gap: 20px;
+}
+.page-stat {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.page-stat-value {
+  font-family: var(--font-mono);
+  font-size: 26px;
+  font-weight: 500;
+  line-height: 1;
+}
+.page-stat-label {
+  color: var(--text-dim);
+  font-size: 14px;
+}
+
+/* Tabla dentro de una tarjeta: borde, cabecera marcada y sin línea tras la última fila.
+   Solo en pantallas anchas: en las angostas la tabla de Usuarios pasa a tarjetas propias. */
+@media (min-width: 721px) {
+  .table-wrap--card {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--surface);
+  }
+  .table-wrap--card .data-table th {
+    background: var(--surface-raised);
+    font-size: 13px;
+    padding: 11px 14px;
+  }
+  .table-wrap--card .data-table td {
+    padding: 12px 14px;
+  }
+  .table-wrap--card .data-table tbody tr:last-child td {
+    border-bottom: 0;
+  }
+  .table-wrap--card .data-table tbody tr:hover {
+    background: var(--surface-raised);
+  }
+  .table-wrap.table-wrap--card .row-actions {
+    background: var(--surface);
+    box-shadow: -12px 0 12px -8px var(--surface);
+  }
+  .table-wrap--card .data-table tbody tr:hover .row-actions {
+    background: var(--surface-raised);
+    box-shadow: -12px 0 12px -8px var(--surface-raised);
+  }
+}
+
+/* Lista sin elementos. */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 44px 24px;
+  border: 1px dashed var(--control-border);
+  border-radius: 10px;
+  text-align: center;
+}
+.empty-state-icon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-bottom: 8px;
+  border: 1px solid var(--control-border);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--admin-text);
+}
+.empty-state-icon svg {
+  width: 20px;
+  height: 20px;
+}
+.empty-state-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+.empty-state-text {
+  margin: 0;
+  max-width: 52ch;
+  color: var(--text-dim);
+  font-size: 14px;
 }
 
 .form--inline {
