@@ -210,7 +210,7 @@ export function ClientsPage() {
       {filtered.length > 0 && (
         <>
           <div className="table-wrap table-wrap--card">
-            <table className="data-table">
+            <table className="data-table data-table--stack">
               <thead>
                 <tr>
                   <th>Nombre</th>
@@ -222,12 +222,12 @@ export function ClientsPage() {
               <tbody>
                 {visible.map((c) => (
                   <tr key={c.id} className={highlightID === c.id ? 'is-new' : undefined}>
-                    <td>{c.name}</td>
+                    <td className="cell-title">{c.name}</td>
                     <td>
                       <span className={`status-dot status-dot--${c.active ? 'ok' : 'off'}`} />
                       {c.active ? 'Activo' : 'Inactivo'}
                     </td>
-                    <td className="mono">{new Date(c.created_at).toLocaleDateString()}</td>
+                    <td className="mono" data-label="Creado">{new Date(c.created_at).toLocaleDateString()}</td>
                     <td className="row-actions">
                       <button
                         type="button"

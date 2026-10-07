@@ -976,6 +976,75 @@ h1[tabindex='-1']:focus {
   }
 }
 
+/* --- Tabla apilada (pantallas angostas) -------------------------------------
+   La versión simple de las tarjetas: cada fila es una tarjeta con la celda
+   `cell-title` arriba, el resto como datos en línea (los que llevan
+   `data-label` muestran su nombre) y las acciones abajo a la derecha. */
+@media (max-width: 720px) {
+  .data-table--stack,
+  .data-table--stack tbody {
+    display: block;
+  }
+  .data-table--stack thead {
+    display: none;
+  }
+  .data-table--stack tr {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 16px;
+    margin-bottom: 10px;
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--surface);
+  }
+  .data-table--stack tbody tr:hover {
+    background: var(--surface);
+  }
+  .data-table--stack td {
+    display: block;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    font-size: 14px;
+  }
+  .data-table--stack td.cell-title {
+    flex: 1 1 100%;
+    font-size: 14px;
+    font-weight: 500;
+    overflow-wrap: anywhere;
+  }
+  .data-table--stack td.col-secondary {
+    display: block; /* gana a la regla que oculta las columnas secundarias en anchos medianos */
+  }
+  .data-table--stack td[data-label]::before {
+    content: attr(data-label) ' ';
+    font-family: var(--font-sans);
+    font-size: 12px;
+    color: var(--text-dim);
+    opacity: 0.8;
+  }
+  .data-table--stack td.row-actions {
+    flex: 1 1 100%;
+    position: static;
+    margin-top: 4px;
+    padding: 0;
+    background: none;
+    box-shadow: none;
+    text-align: right;
+  }
+  .data-table--stack td.row-actions:empty {
+    display: none;
+  }
+  .data-table--stack tr.is-new td {
+    animation: none;
+  }
+  .data-table--stack tr.is-new {
+    animation: row-highlight 3.5s var(--ease);
+  }
+}
+
 /* --- Menú de acciones de una fila ---------------------------------------- */
 .menu {
   position: fixed;

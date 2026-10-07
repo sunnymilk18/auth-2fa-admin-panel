@@ -127,7 +127,7 @@ export function BlacklistPage() {
 
       {bans && bans.length > 0 && (
         <div className="table-wrap table-wrap--card">
-          <table className="data-table">
+          <table className="data-table data-table--stack">
             <thead>
               <tr>
                 <th>IP</th>
@@ -142,19 +142,20 @@ export function BlacklistPage() {
             <tbody>
               {bans.map((b) => (
                 <tr key={b.ip}>
-                  <td className="mono">{b.ip}</td>
-                  <td className="nowrap" title={new Date(b.banned_until * 1000).toLocaleString()}>
+                  <td className="mono cell-title">{b.ip}</td>
+                  <td className="nowrap" data-label="Vence" title={new Date(b.banned_until * 1000).toLocaleString()}>
                     {untilLabel(b.banned_until)}
                   </td>
-                  <td>{b.level}</td>
-                  <td>{b.strikes}</td>
+                  <td data-label="Nivel">{b.level}</td>
+                  <td data-label="Infracciones">{b.strikes}</td>
                   <td
                     className="mono cell-dim col-secondary"
+                    data-label="Tenant"
                     title={b.api_client_name ? `${b.api_client_name} (${b.api_client_id})` : b.api_client_id || 'Sin tenant asociado'}
                   >
                     {b.api_client_id ? b.api_client_name || `${b.api_client_id.slice(0, 8)}…` : '—'}
                   </td>
-                  <td className="mono cell-dim col-secondary">{b.reference || '—'}</td>
+                  <td className="mono cell-dim col-secondary" data-label="Referencia">{b.reference || '—'}</td>
                   <td className="row-actions">
                     <button type="button" className="btn btn--ghost" disabled={busy} onClick={() => askUnban(b.ip)}>
                       Levantar baneo

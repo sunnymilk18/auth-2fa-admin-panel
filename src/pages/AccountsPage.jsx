@@ -205,7 +205,7 @@ export function AccountsPage() {
 
       {accounts && accounts.length > 0 && (
         <div className="table-wrap table-wrap--card">
-          <table className="data-table">
+          <table className="data-table data-table--stack">
             <thead>
               <tr>
                 <th>Correo</th>
@@ -220,7 +220,7 @@ export function AccountsPage() {
                 const isSelf = a.email === actor;
                 return (
                   <tr key={a.id} className={highlightID === a.id ? 'is-new' : undefined}>
-                    <td className="mono cell-wrap">
+                    <td className="mono cell-wrap cell-title">
                       {a.email}
                       {isSelf && <span className="cell-dim"> (tú)</span>}
                     </td>
@@ -231,7 +231,7 @@ export function AccountsPage() {
                       <span className={`status-dot status-dot--${a.active ? 'ok' : 'off'}`} />
                       {a.active ? 'Activa' : 'Revocada'}
                     </td>
-                    <td className="mono col-secondary">{new Date(a.created_at * 1000).toLocaleDateString()}</td>
+                    <td className="mono col-secondary" data-label="Creada">{new Date(a.created_at * 1000).toLocaleDateString()}</td>
                     <td className="row-actions">
                       {!a.active && (
                         <button type="button" className="btn btn--ghost" onClick={() => setReactivating(a)}>

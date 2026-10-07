@@ -121,7 +121,7 @@ export function AllowlistPage() {
 
       {ips && ips.length > 0 && (
         <div className="table-wrap table-wrap--card">
-          <table className="data-table">
+          <table className="data-table data-table--stack">
             <thead>
               <tr>
                 <th>IP</th>
@@ -131,7 +131,7 @@ export function AllowlistPage() {
             <tbody>
               {ips.map((ip) => (
                 <tr key={ip}>
-                  <td className="mono">{ip}</td>
+                  <td className="mono cell-title">{ip}</td>
                   <td className="row-actions">
                     <button type="button" className="btn btn--ghost" disabled={busy} onClick={() => onRemove(ip)}>
                       Quitar
