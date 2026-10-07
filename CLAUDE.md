@@ -119,8 +119,10 @@ Plan de 7 pasos acordado con el usuario:
    (agregar pide confirmación porque la exención es global). Los baneos de
    prueba los crea el usuario con `seed-test-bans.py` (archivo local, fuera
    de git): el Redis del backend es remoto (Upstash); no escribir en él desde
-   aquí. No se probó la vista de un admin sin rol superadmin (no hay cuenta
-   de prueba así).
+   aquí. La vista de un admin (sin rol superadmin) se probó con la cuenta de
+   prueba `test-operador@local.test` (datos en `CLAUDE.local.md`): el menú
+   muestra solo Usuarios y Lista negra, las rutas restringidas redirigen al
+   inicio y el backend responde 403 en clientes, lista blanca y cuentas.
 6. Página de Accounts (gestión de admins/superadmins) — **hecha** (solo
    superadmin): listar, crear (con QR del TOTP de un solo uso, usando la
    dependencia `qrcode`) y revocar; no deja revocar la cuenta propia.
