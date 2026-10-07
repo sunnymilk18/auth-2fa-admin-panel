@@ -107,13 +107,15 @@ Plan de 7 pasos acordado con el usuario:
    repositorio de clients).
 5. Página de Blacklist — **hecha**, usando el nuevo `GET /admin/blacklist`
    del backend: baneos activos con "Levantar baneo" (la confirmación avisa
-   que la IP vuelve a empezar de cero), levantar el baneo de una IP
-   escrita a mano, y lista blanca (listar/agregar/quitar) solo para
-   superadmin. Pendiente de ver con datos reales: el Redis del backend es
-   remoto (Upstash), así que los baneos de prueba los crea el usuario con
-   `seed-test-bans.py` (archivo local, fuera de git); no escribir en ese
-   Redis desde aquí. Tampoco se probó la vista de un admin sin rol
-   superadmin (no hay cuenta de prueba así).
+   que la IP vuelve a empezar de cero) y levantar el baneo de una IP
+   escrita a mano. La lista blanca NO va dentro de Blacklist: el usuario pidió
+   que tuviera su propia opción en el menú, así que es la página **Allowlist**
+   (`/allowlist`, solo superadmin): listar/agregar/quitar IPs exentas
+   (agregar pide confirmación porque la exención es global). Los baneos de
+   prueba los crea el usuario con `seed-test-bans.py` (archivo local, fuera
+   de git): el Redis del backend es remoto (Upstash); no escribir en él desde
+   aquí. No se probó la vista de un admin sin rol superadmin (no hay cuenta
+   de prueba así).
 6. Página de Accounts (gestión de admins/superadmins) — **hecha** (solo
    superadmin): listar, crear (con QR del TOTP de un solo uso, usando la
    dependencia `qrcode`) y revocar; no deja revocar la cuenta propia.

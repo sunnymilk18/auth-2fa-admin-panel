@@ -395,6 +395,12 @@ a {
 }
 
 /* --- Páginas de datos (Clients, Users, Blacklist, Accounts) ------------ */
+.page-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .page-header {
   display: flex;
   align-items: center;
@@ -602,18 +608,6 @@ a {
 }
 
 /* --- Secciones de una página ------------------------------------------- */
-.page-section {
-  margin-top: 36px;
-}
-.section-heading {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 6px;
-}
-.section-heading h3 {
-  font-size: 16px;
-}
 .section-note {
   margin: 0 0 16px;
   color: var(--text-dim);
