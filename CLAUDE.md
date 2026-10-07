@@ -73,16 +73,18 @@ Plan de 7 pasos acordado con el usuario:
    (ver abajo) y el usuario confirmó que el flujo completo de
    "Desactivar" y "Rotar key" funciona.
 4. Página de Users — **hecha**: listado paginado (25 por página) con
-   búsqueda, columna "Tenant", banear/desbanear y un menú "Más acciones"
-   con ver/limpiar bloqueos, corregir correo, exigir PIN al iniciar sesión,
-   revocar sesiones, desactivar TOTP y resetear PIN. La columna Tenant
-   muestra el nombre a un superadmin (cruzando el UUID con la lista de
-   clients) y el UUID abreviado a un admin, que no puede leer esa lista.
+   búsqueda, columna "Tenant" (el backend manda `api_client_name` junto a
+   cada usuario; si viene vacío se muestra el UUID abreviado), banear/
+   desbanear y un menú "Más acciones" con ver/limpiar bloqueos, corregir
+   correo, exigir PIN al iniciar sesión, revocar sesiones, desactivar TOTP
+   y resetear PIN.
    "Corregir correo" solo inicia la corrección: el backend envía un código
    al correo nuevo y el cambio se aplica cuando la persona lo confirma (el
    administrador nunca ve el código); se probó el envío real, no la
-   confirmación. Una alternativa más limpia para los nombres de tenant sería
-   que el backend los incluya en el listado de usuarios.
+   confirmación. Pendiente opcional en el backend: que `GET /admin/blacklist`
+   también traiga el nombre del tenant (hoy la columna de Blacklist muestra el
+   UUID abreviado; el handler no usa Postgres y habría que cablearle el
+   repositorio de clients).
 5. Página de Blacklist — **hecha**, usando el nuevo `GET /admin/blacklist`
    del backend: baneos activos con "Levantar baneo" (la confirmación avisa
    que la IP vuelve a empezar de cero), levantar el baneo de una IP
