@@ -229,8 +229,19 @@ a {
 }
 
 .shell-identity {
+  /* Un correo largo se acorta con puntos suspensivos en vez de salirse por la izquierda. */
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   font-size: 14px;
   color: var(--text-dim);
+}
+.shell-topbar > * {
+  flex: none;
+}
+.shell-topbar > .shell-identity {
+  flex: 0 1 auto;
 }
 
 .shell-content {
@@ -266,6 +277,16 @@ a {
   }
   .shell-api {
     display: none;
+  }
+  /* El correo completo en su propia línea; el rol y "Cerrar sesión" debajo. */
+  .shell-topbar {
+    flex-wrap: wrap;
+    gap: 8px 14px;
+    padding: 12px 16px;
+  }
+  .shell-topbar > .shell-identity {
+    flex: 1 1 100%;
+    text-align: right;
   }
   .shell-content {
     padding: 20px 16px;
