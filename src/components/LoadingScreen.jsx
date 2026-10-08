@@ -1,6 +1,6 @@
 // Pantalla de carga de página completa (mientras se comprueba la sesión).
 // Es idéntica al marcador que `index.html` dibuja antes de que cargue el
-// JavaScript — mismas clases, estilos en el <style> de ese archivo —, así que
+// JavaScript — mismas clases, estilos en public/splash.css —, así que
 // al pasar de uno a otro no hay salto ni parpadeo.
 //
 // Las animaciones del marcador de index.html ya venían corriendo; este elemento

@@ -7,57 +7,11 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <!-- Marcador de carga: se ve desde el primer instante, antes de que cargue el
          JavaScript, con el fondo del panel (sin pantalla en blanco). React lo
-         reemplaza al arrancar; LoadingScreen.jsx dibuja lo mismo. Los colores
-         repiten los tokens de styles.css (--bg, --text-dim, --admin). -->
-    <style>
-      html,
-      body {
-        margin: 0;
-        background: #12151b;
-      }
-      .splash {
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 14px;
-        color: #9099a8;
-        font: 14px/1.5 'IBM Plex Sans', system-ui, sans-serif;
-      }
-      .splash-lock {
-        width: 52px;
-        height: 52px;
-        opacity: 0;
-        animation: splash-in 0.4s ease 0.15s forwards;
-      }
-      .splash-text {
-        margin: 0;
-        opacity: 0;
-        animation: splash-in 0.4s ease 1.2s forwards;
-      }
-      @keyframes splash-in {
-        to {
-          opacity: 1;
-        }
-      }
-      @keyframes splash-breathe {
-        50% {
-          opacity: 0.55;
-        }
-      }
-      @media (prefers-reduced-motion: no-preference) {
-        .splash-lock {
-          animation: splash-in 0.4s ease 0.15s forwards, splash-breathe 2.2s ease-in-out 0.6s infinite;
-        }
-      }
-    </style>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
+         reemplaza al arrancar; LoadingScreen.jsx dibuja lo mismo. Sus estilos están
+         en public/splash.css y no dentro de la página: la política de contenido
+         del servidor no permite estilos incrustados. Los colores repiten los
+         tokens de styles.css (--bg, --text-dim, --admin). -->
+    <link rel="stylesheet" href="/splash.css" />
   </head>
   <body>
     <div id="root">

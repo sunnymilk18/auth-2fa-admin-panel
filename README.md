@@ -57,7 +57,11 @@ un aviso.
 
 El repositorio trae un `Dockerfile` (compila con Node y sirve `dist/` con nginx)
 y un `nginx.conf` que devuelve `index.html` para cualquier ruta, para que
-recargar `/users` no dé 404.
+recargar `/users` no dé 404. `security-headers.conf` agrega los encabezados de
+seguridad (política de contenido, HSTS y otros): la política solo permite
+conectar al propio panel y al origen de `VITE_API_URL`, que el Dockerfile toma
+al construir la imagen. Las fuentes se sirven desde el propio panel; el panel
+no carga nada de dominios externos.
 
 1. En Dokploy, crea una **Application** (no Compose) conectada a este repo, con
    build tipo **Dockerfile**.
