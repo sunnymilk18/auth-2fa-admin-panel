@@ -640,7 +640,8 @@ h1[tabindex='-1']:focus {
       background-position: -120% 0;
     }
   }
-  .skeleton {
+  .skeleton,
+  .lockout-skeleton {
     animation: skeleton-in 0.3s ease 0.3s backwards;
   }
   .skeleton-bar {
@@ -950,6 +951,11 @@ h1[tabindex='-1']:focus {
 }
 .lockout-list .lockout-state {
   color: var(--text-dim);
+}
+/* Esqueleto del diálogo: las barras ocupan lo mismo que una fila de texto (21 px) para que
+   el cuadro no cambie de alto cuando llegan los datos. */
+.lockout-skeleton .skeleton-bar {
+  margin: 5px 0;
 }
 
 /* --- Tabla en tarjetas (pantallas angostas) --------------------------------

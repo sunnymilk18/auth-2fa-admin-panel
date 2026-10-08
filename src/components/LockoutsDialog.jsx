@@ -69,7 +69,22 @@ export function LockoutsDialog({ user, onClose }) {
       <p className="mono dialog-subject">{user.email}</p>
 
       {error && <p className="error" role="alert">{error}</p>}
-      {!lockouts && !error && <p>Cargando…</p>}
+      {!lockouts && !error && (
+        // Mismas dos filas que la lista real, para que el cuadro no cambie de alto al llegar los datos.
+        <div className="lockout-skeleton" role="status" aria-live="polite">
+          <span className="sr-only">Cargando…</span>
+          <ul className="lockout-list" aria-hidden="true">
+            <li>
+              <span className="skeleton-bar" style={{ width: '34%' }} />
+              <span className="skeleton-bar" style={{ width: '26%' }} />
+            </li>
+            <li>
+              <span className="skeleton-bar" style={{ width: '14%' }} />
+              <span className="skeleton-bar" style={{ width: '26%' }} />
+            </li>
+          </ul>
+        </div>
+      )}
 
       {lockouts && (
         <ul className="lockout-list">
