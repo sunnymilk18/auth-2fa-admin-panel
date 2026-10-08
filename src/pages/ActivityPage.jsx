@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { AppShell } from '../components/AppShell';
 import { PageHeader } from '../components/PageHeader';
 import { EmptyState } from '../components/EmptyState';
@@ -39,7 +40,13 @@ export function ActivityPage() {
   const [data, setData] = useState(null); // { entries, page, total }
   const [error, setError] = useState('');
   const [page, setPage] = useState(1);
-  const [filters, setFilters] = useState(NO_FILTERS);
+  // Un enlace de otra pantalla puede abrir la lista ya filtrada (?action=…&from=AAAA-MM-DD).
+  const [params] = useSearchParams();
+  const [filters, setFilters] = useState(() => ({
+    ...NO_FILTERS,
+    action: params.get('action') || '',
+    from: params.get('from') || '',
+  }));
   const [operators, setOperators] = useState([]);
 
   // Solo vale la respuesta de la última petición si el filtro cambia en vuelo.

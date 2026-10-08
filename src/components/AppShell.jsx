@@ -4,14 +4,13 @@ import { useAuth } from '../auth/AuthContext';
 
 // Ítems de navegación con su alcance: los de superadmin solo se muestran
 // a quien tiene ese rol, la misma regla que ya aplica el backend.
-// `description` es la línea que acompaña a cada sección en la pantalla de inicio.
 export const NAV_ITEMS = [
-  { label: 'Clientes', path: '/clients', roles: ['superadmin'], description: 'Crea clientes, actívalos o desactívalos y rota sus claves.' },
-  { label: 'Usuarios', path: '/users', roles: ['admin', 'superadmin'], description: 'Banea o desbanea, corrige correos y gestiona PIN y TOTP.' },
-  { label: 'Lista negra', path: '/blacklist', roles: ['admin', 'superadmin'], description: 'Consulta las IPs baneadas y levanta un baneo.' },
-  { label: 'Lista blanca', path: '/allowlist', roles: ['superadmin'], description: 'IPs exentas de sanciones en toda la plataforma.' },
-  { label: 'Cuentas', path: '/accounts', roles: ['superadmin'], description: 'Crea, reactiva y revoca cuentas de operadores.' },
-  { label: 'Actividad', path: '/activity', roles: ['superadmin'], description: 'Quién hizo qué, cuándo y desde qué IP.' },
+  { label: 'Clientes', path: '/clients', roles: ['superadmin'] },
+  { label: 'Usuarios', path: '/users', roles: ['admin', 'superadmin'] },
+  { label: 'Lista negra', path: '/blacklist', roles: ['admin', 'superadmin'] },
+  { label: 'Lista blanca', path: '/allowlist', roles: ['superadmin'] },
+  { label: 'Cuentas', path: '/accounts', roles: ['superadmin'] },
+  { label: 'Actividad', path: '/activity', roles: ['superadmin'] },
 ];
 
 // Pie del menú: a qué API está conectado el panel y si responde (GET /health,

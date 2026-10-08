@@ -1718,8 +1718,7 @@ span.cell-dim {
   border-color: var(--control-border-hover);
   background: var(--surface-raised);
 }
-.welcome-alert:focus-visible,
-.welcome-section:focus-visible {
+.welcome-alert:focus-visible {
   outline: 2px solid var(--admin);
   outline-offset: 2px;
 }
@@ -1736,58 +1735,90 @@ span.cell-dim {
   font-weight: 600;
 }
 
-.welcome-sections-title {
-  margin: 0 0 12px;
-  font-size: 16px;
-  color: var(--text-dim);
-  font-weight: 600;
-}
-.welcome-sections {
+.stat-strip {
   list-style: none;
-  margin: 0;
+  margin: 0 0 16px;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 12px;
-}
-.welcome-section {
-  position: relative;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 4px 12px;
-  height: 100%;
-  padding: 14px 16px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  /* La rejilla se pinta con el color del separador y cada celda lo tapa con su fondo:
+     queda una línea fina entre celdas sin importar cómo se acomoden. */
+  gap: 1px;
+  background: var(--border);
   border: 1px solid var(--control-border);
   border-radius: var(--radius);
+  overflow: hidden;
+}
+.stat-strip--2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.stat-strip li {
+  display: flex;
+}
+.stat {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  padding: 14px 16px 13px;
   background: var(--surface);
   color: var(--text);
   text-decoration: none;
-  transition: border-color 0.15s var(--ease), background-color 0.15s var(--ease);
+  transition: background-color 0.15s var(--ease);
 }
-.welcome-section:hover {
-  border-color: var(--control-border-hover);
+.stat:hover {
   background: var(--surface-raised);
 }
-.welcome-section-name {
-  font-weight: 600;
-  font-size: 15px;
+.stat:focus-visible {
+  outline: 2px solid var(--admin);
+  outline-offset: -2px;
 }
-.welcome-section-desc {
-  grid-column: 1;
+.stat-label {
+  padding-right: 18px;
   color: var(--text-dim);
-  font-size: 14px;
-  line-height: 1.45;
+  font-size: 13px;
+  font-weight: 500;
 }
-.welcome-section-chevron {
-  grid-column: 2;
-  grid-row: 1 / span 2;
-  align-self: center;
+.stat-value {
+  display: flex;
+  align-items: center;
+  min-height: 34px;
+  font-family: var(--font-mono);
+  font-size: 28px;
+  font-weight: 500;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+}
+.stat-skeleton {
+  width: 56px;
+  height: 22px;
+}
+.stat-hint {
+  color: var(--text-dim);
+  font-size: 13px;
+}
+.stat-chevron {
+  position: absolute;
+  top: 15px;
+  right: 14px;
   color: var(--text-dim);
   transition: transform 0.15s var(--ease), color 0.15s var(--ease);
 }
-.welcome-section:hover .welcome-section-chevron {
+.stat:hover .stat-chevron {
   color: var(--seal);
-  transform: translateX(3px);
+  transform: translateX(2px);
+}
+.stat--alert .stat-value {
+  color: var(--danger-text);
+}
+@media (max-width: 720px) {
+  .stat-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .stat-value {
+    font-size: 24px;
+  }
 }
 
 @media (max-width: 720px) {

@@ -11,7 +11,7 @@ Este repositorio es únicamente el frontend; el backend vive en su propio repo.
 
 | Sección | Ruta | Quién la ve | Para qué sirve |
 | --- | --- | --- | --- |
-| Inicio | `/` | admin y superadmin | Bienvenida y accesos a las secciones del rol. |
+| Inicio | `/` | admin y superadmin | Bienvenida y una franja de cifras (usuarios, IPs baneadas y, para superadmin, clientes, operadores y actividad de hoy). |
 | Clientes | `/clients` | superadmin | Crear clientes, activarlos o desactivarlos y rotar sus claves. |
 | Usuarios | `/users` | admin y superadmin | Banear o desbanear, ver y limpiar bloqueos, corregir el correo, exigir PIN, revocar sesiones, desactivar el TOTP y resetear el PIN. |
 | Lista negra | `/blacklist` | admin y superadmin | Ver las IPs baneadas y levantar un baneo. |

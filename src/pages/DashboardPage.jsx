@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { AppShell, NAV_ITEMS } from '../components/AppShell';
+import { AppShell } from '../components/AppShell';
 import { PageTitle } from '../components/PageTitle';
+import { StatStrip } from '../components/StatStrip';
 import { WelcomeLock } from '../components/WelcomeLock';
 import { useAuth } from '../auth/AuthContext';
 import { api } from '../api';
@@ -29,12 +30,32 @@ function loginTime() {
   }
 }
 
-// Pantalla de inicio: candado de sesión verificada, las secciones del rol y, solo
-// si hay algo que atender, un aviso de IPs baneadas.
+// "Hoy" va de las 00:00 de la hora local de quien mira hasta ahora, y "ayer" es el día
+// anterior completo. `day` tiene el formato del selector de fecha de Actividad.
+function dayBounds() {
+  const start = new Date();
+  start.setHours(0, 0, 0, 0);
+  const yesterday = new Date(start);
+  yesterday.setDate(yesterday.getDate() - 1);
+  return {
+    today: { from: start.toISOString() },
+    yesterday: { from: yesterday.toISOString(), to: new Date(start.getTime() - 1).toISOString() },
+    day: start.toLocaleDateString('sv'),
+  };
+}
+
+// Aviso de intentos fallidos: hoy al menos 5 y al menos el triple que ayer.
+const FAILURE_ALERT_MIN = 5;
+const FAILURE_ALERT_RATIO = 3;
+
+// Pantalla de inicio: candado de sesión verificada, una franja de cifras y, solo si
+// hay algo raro, un aviso de intentos fallidos. Las secciones ya están en el menú. Cada
+// cifra se carga por separado: una que falle se ve como un guion y no tapa a las demás.
 export function DashboardPage() {
   const { actor, role } = useAuth();
   const [intro] = useState(takeIntroFlag);
-  const [banned, setBanned] = useState(0);
+  // clave -> valor. Una clave ausente todavía está cargando; null es que falló.
+  const [figures, setFigures] = useState({});
 
   // Se consume en un efecto (no al leerla): React puede ejecutar el inicializador dos veces.
   useEffect(() => {
@@ -47,24 +68,87 @@ export function DashboardPage() {
 
   useEffect(() => {
     let cancelled = false;
-    api
-      .listBans()
-      .then((res) => {
-        if (!cancelled) setBanned(res.bans?.length || 0);
-      })
-      .catch(() => {
-        // el aviso es un extra: si falla, simplemente no se muestra
-      });
+    const put = (key, promise) =>
+      promise
+        .then((value) => !cancelled && setFigures((f) => ({ ...f, [key]: value })))
+        .catch(() => !cancelled && setFigures((f) => ({ ...f, [key]: null })));
+
+    put('users', api.listUsers({ page: 1, pageSize: 1 }).then((res) => res.total));
+    put('bans', api.listBans().then((res) => res.bans?.length || 0));
+
+    if (role === 'superadmin') {
+      const { today, yesterday } = dayBounds();
+      // Del registro solo interesa el total: una página de una fila basta.
+      const count = (action, range) => api.listAudit({ page: 1, pageSize: 1, action, ...range }).then((res) => res.total);
+
+      put('clients', api.listClients().then((list) => ({ active: list.filter((c) => c.active).length, total: list.length })));
+      put('operators', api.listAccounts().then((res) => ({ active: res.accounts.filter((a) => a.active).length, total: res.accounts.length })));
+      put('actionsToday', count('', today));
+      put('actionsYesterday', count('', yesterday));
+      put('loginFailedToday', count('admin.login_failed', today));
+      put('pinFailedToday', count('account.pin_failed', today));
+      put(
+        'failuresYesterday',
+        Promise.all([count('admin.login_failed', yesterday), count('account.pin_failed', yesterday)]).then(([a, b]) => a + b)
+      );
+    }
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [role]);
 
-  const items = NAV_ITEMS.filter((item) => item.roles.includes(role));
   const since = loginTime();
   const at = (actor || '').indexOf('@');
   const name = at > 0 ? actor.slice(0, at) : actor;
   const domain = at > 0 ? actor.slice(at) : '';
+
+  const isSuper = role === 'superadmin';
+  const { day } = dayBounds();
+  // Los fallos de acceso y los de PIN van aparte en el registro: la cifra los suma y el
+  // enlace lleva al tipo que más pesa.
+  const failuresToday =
+    figures.loginFailedToday === undefined || figures.pinFailedToday === undefined
+      ? undefined
+      : figures.loginFailedToday === null || figures.pinFailedToday === null
+        ? null
+        : figures.loginFailedToday + figures.pinFailedToday;
+  const failuresYesterday = figures.failuresYesterday;
+  const failuresRaised =
+    typeof failuresToday === 'number' &&
+    typeof failuresYesterday === 'number' &&
+    failuresToday >= FAILURE_ALERT_MIN &&
+    failuresToday >= FAILURE_ALERT_RATIO * failuresYesterday;
+  const failureAction = (figures.pinFailedToday || 0) > (figures.loginFailedToday || 0) ? 'account.pin_failed' : 'admin.login_failed';
+  const failuresLink = `/activity?action=${failureAction}&from=${day}`;
+
+  // Las cifras que vienen de un conteo parcial (activos de N) dejan undefined mientras cargan.
+  const part = (key, field) => (figures[key] ? figures[key][field] : figures[key]);
+
+  const stats = [
+    { key: 'users', label: 'Usuarios', value: figures.users, hint: 'en todos los tenants', to: '/users' },
+    { key: 'bans', label: 'IPs baneadas', value: figures.bans, hint: 'ahora', to: '/blacklist' },
+    ...(isSuper
+      ? [
+          { key: 'clients', label: 'Clientes activos', value: part('clients', 'active'), hint: `de ${part('clients', 'total')}`, to: '/clients' },
+          { key: 'operators', label: 'Operadores activos', value: part('operators', 'active'), hint: `de ${part('operators', 'total')}`, to: '/accounts' },
+          {
+            key: 'actions',
+            label: 'Acciones hoy',
+            value: figures.actionsToday,
+            hint: `ayer ${figures.actionsYesterday ?? '—'}`,
+            to: `/activity?from=${day}`,
+          },
+          {
+            key: 'failures',
+            label: 'Fallos de acceso hoy',
+            value: failuresToday,
+            hint: `ayer ${failuresYesterday ?? '—'}`,
+            to: failuresLink,
+            alert: failuresRaised,
+          },
+        ]
+      : []),
+  ].map((s, i) => ({ ...s, delay: `${3.9 + i * 0.06}s` }));
 
   return (
     <AppShell>
@@ -94,9 +178,6 @@ export function DashboardPage() {
                 <span className={`role-badge role-badge--${role}`}>{role}</span>
               </li>
               {since && <li>Desde {since}</li>}
-              <li>
-                {items.length} {items.length === 1 ? 'sección' : 'secciones'}
-              </li>
             </ul>
             {role === 'admin' && (
               <p className="welcome-scope reveal" style={{ '--d': '3.9s' }}>
@@ -106,32 +187,15 @@ export function DashboardPage() {
           </div>
         </section>
 
-        {banned > 0 && (
-          <Link to="/blacklist" className="welcome-alert reveal" style={{ '--d': '4s' }}>
+        <StatStrip stats={stats} />
+
+        {failuresRaised && (
+          <Link to={failuresLink} className="welcome-alert reveal" style={{ '--d': '4.3s' }}>
             <span className="welcome-alert-dot" aria-hidden="true" />
-            {banned === 1 ? 'Hay 1 IP baneada ahora.' : `Hay ${banned} IPs baneadas ahora.`}
-            <span className="welcome-alert-link">Ver lista negra</span>
+            Hay más intentos fallidos de lo normal: {failuresToday} hoy, {failuresYesterday} ayer.
+            <span className="welcome-alert-link">Ver en Actividad</span>
           </Link>
         )}
-
-        <section aria-labelledby="welcome-sections">
-          <h2 id="welcome-sections" className="welcome-sections-title reveal" style={{ '--d': '4s' }}>
-            Tus secciones
-          </h2>
-          <ul className="welcome-sections">
-            {items.map((item, i) => (
-              <li key={item.path} className="reveal" style={{ '--d': `${4 + i * 0.08}s` }}>
-                <Link to={item.path} className="welcome-section">
-                  <span className="welcome-section-name">{item.label}</span>
-                  <span className="welcome-section-desc">{item.description}</span>
-                  <svg className="welcome-section-chevron" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
-                    <path d="M6 3.5 10.5 8 6 12.5" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </section>
       </div>
     </AppShell>
   );
