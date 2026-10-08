@@ -1318,6 +1318,16 @@ h1[tabindex='-1']:focus {
   padding: 8px 10px;
   min-width: 0;
 }
+/* Campo del PIN: seis dígitos en mono y espaciados, para contarlos de un vistazo. */
+.password-field input.pin-input {
+  font-family: var(--font-mono);
+  letter-spacing: 0.3em;
+}
+.notice a {
+  color: var(--admin-text);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
 /* Campo de contraseña con el botón de mostrar/ocultar dentro del cuadro. */
 .form .field {
   display: flex;

@@ -1,7 +1,10 @@
 import { useState } from 'react';
 import { Modal } from './Modal';
 import { PasswordField } from './PasswordField';
+import { PinField } from './PinField';
+import { PinRequired } from './PinRequired';
 import { api } from '../api';
+import { pinError } from '../utils/pin';
 
 function sentence(text) {
   const t = text.trim();
@@ -11,8 +14,17 @@ function sentence(text) {
 // Pide la contraseña nueva para reactivar una cuenta revocada. La cuenta no
 // vuelve con sus credenciales anteriores: el backend rota también el secreto
 // TOTP y lo devuelve una sola vez (onDone recibe esa respuesta).
-export function ReactivateDialog({ account, onClose, onDone }) {
+export function ReactivateDialog(props) {
+  return (
+    <PinRequired onClose={props.onClose}>
+      <ReactivateForm {...props} />
+    </PinRequired>
+  );
+}
+
+function ReactivateForm({ account, onClose, onDone }) {
   const [password, setPassword] = useState('');
+  const [pin, setPin] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
 
@@ -21,10 +33,12 @@ export function ReactivateDialog({ account, onClose, onDone }) {
     setBusy(true);
     setError('');
     try {
-      const res = await api.reactivateAccount(account.id, password);
+      const res = await api.reactivateAccount(account.id, password, pin);
       await onDone(res);
     } catch (err) {
-      setError(sentence(err.data?.error || err.message));
+      const pinMessage = pinError(err);
+      if (pinMessage) setPin('');
+      setError(pinMessage || sentence(err.data?.error || err.message));
       setBusy(false);
     }
   }
@@ -50,13 +64,15 @@ export function ReactivateDialog({ account, onClose, onDone }) {
         onChange={(e) => setPassword(e.target.value)}
       />
 
+      <PinField value={pin} onChange={setPin} />
+
       {error && <p id="reactivate-error" className="error" role="alert">{error}</p>}
 
       <div className="dialog-actions">
         <button type="button" className="btn btn--ghost" disabled={busy} onClick={onClose}>
           Cancelar
         </button>
-        <button type="submit" className="btn btn--primary" disabled={busy}>
+        <button type="submit" className="btn btn--primary" disabled={busy || pin.length !== 6}>
           Reactivar cuenta
         </button>
       </div>

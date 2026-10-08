@@ -3,26 +3,33 @@ import { AppShell } from '../components/AppShell';
 import { PageHeader } from '../components/PageHeader';
 import { ChangePasswordDialog } from '../components/ChangePasswordDialog';
 import { RotateTotpDialog } from '../components/RotateTotpDialog';
+import { SetPinDialog } from '../components/SetPinDialog';
 import { useToast } from '../components/ToastProvider';
 import { useAuth } from '../auth/AuthContext';
 
 // Lo que cada persona puede hacer sobre su propia cuenta, sea admin o superadmin.
 export function MyAccountPage() {
-  const { actor, role } = useAuth();
+  const { actor, role, hasPin, refreshIdentity } = useAuth();
   const { notify } = useToast();
-  const [dialog, setDialog] = useState(null); // 'password' | 'totp' | null
+  const [dialog, setDialog] = useState(null); // 'password' | 'totp' | 'pin' | null
 
   return (
     <AppShell>
       <PageHeader
         title="Mi cuenta"
-        description="Tu contraseña y tu código TOTP. Los cambios valen solo para tu cuenta."
+        description="Tu contraseña, tu código TOTP y tu PIN. Los cambios valen solo para tu cuenta."
       />
 
       <div className="account-id">
         <span className="mono">{actor}</span>
         <span className={`role-badge role-badge--${role}`}>{role}</span>
       </div>
+
+      {!hasPin && (
+        <p className="notice" role="status">
+          Aún no tienes un PIN. Sin él no puedes banear, revocar ni rotar claves: crea el tuyo en la última fila.
+        </p>
+      )}
 
       <ul className="setting-list">
         <li className="setting-row">
@@ -48,7 +55,31 @@ export function MyAccountPage() {
             Rotar TOTP
           </button>
         </li>
+        <li className="setting-row">
+          <div>
+            <h2>PIN</h2>
+            <p>
+              Seis dígitos que confirman las acciones delicadas: banear, revocar cuentas, rotar claves, cambiar tu
+              contraseña. Si alguien usa tu sesión abierta, sin el PIN no puede hacerlas.
+            </p>
+          </div>
+          <button type="button" className="btn" onClick={() => setDialog('pin')}>
+            {hasPin ? 'Cambiar PIN' : 'Crear PIN'}
+          </button>
+        </li>
       </ul>
+
+      {dialog === 'pin' && (
+        <SetPinDialog
+          hasPin={hasPin}
+          onClose={() => setDialog(null)}
+          onDone={async () => {
+            await refreshIdentity();
+            setDialog(null);
+            notify(hasPin ? 'PIN cambiado.' : 'PIN creado. Ya puedes confirmar acciones con él.');
+          }}
+        />
+      )}
 
       {dialog === 'password' && (
         <ChangePasswordDialog

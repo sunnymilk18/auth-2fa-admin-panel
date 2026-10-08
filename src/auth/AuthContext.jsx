@@ -9,7 +9,7 @@ const AuthContext = createContext(null);
 // logueado y con qué rol (identity), que se recupera llamando a
 // GET /admin/auth/me — al cargar la página, y después de login/logout.
 export function AuthProvider({ children }) {
-  const [identity, setIdentity] = useState(null); // { actor, role } | null
+  const [identity, setIdentity] = useState(null); // { actor, role, has_pin } | null
   const [loading, setLoading] = useState(true);
   // true cuando la sesión terminó a mitad de uso (un 401 con la sesión abierta):
   // la pantalla de login lo explica en vez de aparecer sin motivo.
@@ -77,7 +77,10 @@ export function AuthProvider({ children }) {
   const value = {
     actor: identity?.actor || null,
     role: identity?.role || null,
+    // Si la cuenta ya creó su PIN de operador (lo piden las acciones destructivas).
+    hasPin: Boolean(identity?.has_pin),
     isAuthenticated: Boolean(identity),
+    refreshIdentity,
     loading,
     sessionExpired,
     login,

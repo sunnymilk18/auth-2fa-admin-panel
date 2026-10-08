@@ -6,6 +6,7 @@ import { ListSkeleton } from '../components/ListSkeleton';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { useToast } from '../components/ToastProvider';
 import { api } from '../api';
+import { pinError } from '../utils/pin';
 import { isValidIP } from '../utils/ip';
 
 function sentence(text) {
@@ -37,17 +38,20 @@ export function AllowlistPage() {
     load();
   }, []);
 
-  // Corre una acción que cambia datos y refresca la lista.
-  async function run({ call, success, failure }) {
-    setConfirming(null);
+  // Corre una acción que cambia datos (las dos piden el PIN) y refresca la lista. El
+  // diálogo sigue abierto hasta que sale bien: un PIN incorrecto vuelve al diálogo.
+  async function run({ call, success, failure }, pin) {
     setBusy(true);
     setError('');
     try {
-      await call();
+      await call(pin);
+      setConfirming(null);
       await load();
       notify(success);
       return true;
     } catch (err) {
+      if (pinError(err)) throw err;
+      setConfirming(null);
       setError(sentence(err.data?.error || failure));
       notify(failure, { type: 'error' });
       return false;
@@ -71,22 +75,37 @@ export function AllowlistPage() {
         'Esta IP nunca más se sancionará ni se baneará, en ningún tenant de la plataforma. Si hoy tiene un baneo activo, también se levanta.',
       confirmLabel: 'Agregar a la lista blanca',
       danger: true,
-      run: async () => {
-        const ok = await run({
-          call: () => api.addAllowlist(ip),
-          success: `"${ip}" agregada a la lista blanca.`,
-          failure: `No se pudo agregar "${ip}" a la lista blanca.`,
-        });
+      needsPin: true,
+      run: async (pin) => {
+        const ok = await run(
+          {
+            call: (p) => api.addAllowlist(ip, p),
+            success: `"${ip}" agregada a la lista blanca.`,
+            failure: `No se pudo agregar "${ip}" a la lista blanca.`,
+          },
+          pin
+        );
         if (ok) setInput('');
       },
     });
   }
 
   function onRemove(ip) {
-    run({
-      call: () => api.removeAllowlist(ip),
-      success: `"${ip}" quitada de la lista blanca.`,
-      failure: `No se pudo quitar "${ip}" de la lista blanca.`,
+    setConfirming({
+      title: `Quitar "${ip}" de la lista blanca`,
+      message: 'La IP vuelve a poder recibir sanciones y baneos en todos los tenants.',
+      confirmLabel: 'Quitar de la lista blanca',
+      danger: true,
+      needsPin: true,
+      run: (pin) =>
+        run(
+          {
+            call: (p) => api.removeAllowlist(ip, p),
+            success: `"${ip}" quitada de la lista blanca.`,
+            failure: `No se pudo quitar "${ip}" de la lista blanca.`,
+          },
+          pin
+        ),
     });
   }
 
@@ -151,6 +170,7 @@ export function AllowlistPage() {
         message={confirming?.message}
         confirmLabel={confirming?.confirmLabel}
         danger={confirming?.danger}
+        needsPin={confirming?.needsPin}
         onConfirm={confirming?.run}
         onCancel={() => setConfirming(null)}
       />

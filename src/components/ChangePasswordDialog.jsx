@@ -1,7 +1,10 @@
 import { useState } from 'react';
 import { Modal } from './Modal';
 import { PasswordField } from './PasswordField';
+import { PinField } from './PinField';
+import { PinRequired } from './PinRequired';
 import { api } from '../api';
+import { pinError } from '../utils/pin';
 
 function sentence(text) {
   const t = text.trim();
@@ -11,8 +14,17 @@ function sentence(text) {
 // Cambia la contraseña de la propia cuenta. Pide la actual (una equivocación
 // responde 403, no 401: no termina la sesión) y valida aquí que la nueva se
 // haya escrito igual dos veces. El backend cierra las demás sesiones.
-export function ChangePasswordDialog({ onClose, onDone }) {
+export function ChangePasswordDialog(props) {
+  return (
+    <PinRequired onClose={props.onClose}>
+      <ChangePasswordForm {...props} />
+    </PinRequired>
+  );
+}
+
+function ChangePasswordForm({ onClose, onDone }) {
   const [current, setCurrent] = useState('');
+  const [pin, setPin] = useState('');
   const [next, setNext] = useState('');
   const [repeat, setRepeat] = useState('');
   const [busy, setBusy] = useState(false);
@@ -27,15 +39,12 @@ export function ChangePasswordDialog({ onClose, onDone }) {
     setBusy(true);
     setError('');
     try {
-      await api.changePassword(current, next);
+      await api.changePassword(current, next, pin);
       await onDone();
     } catch (err) {
-      if (err.status === 429 && err.retryAfterSeconds) {
-        const minutes = Math.ceil(err.retryAfterSeconds / 60);
-        setError(`Demasiados intentos fallidos. Vuelve a intentar en ${minutes} minuto${minutes === 1 ? '' : 's'}.`);
-      } else {
-        setError(sentence(err.data?.error || err.message));
-      }
+      const pinMessage = pinError(err);
+      if (pinMessage) setPin('');
+      setError(pinMessage || sentence(err.data?.error || err.message));
       setBusy(false);
     }
   }
@@ -73,6 +82,8 @@ export function ChangePasswordDialog({ onClose, onDone }) {
         onChange={(e) => setRepeat(e.target.value)}
       />
 
+      <PinField value={pin} onChange={setPin} />
+
       {error && (
         <p id="change-password-error" className="error" role="alert">
           {error}
@@ -83,7 +94,7 @@ export function ChangePasswordDialog({ onClose, onDone }) {
         <button type="button" className="btn btn--ghost" disabled={busy} onClick={onClose}>
           Cancelar
         </button>
-        <button type="submit" className="btn btn--primary" disabled={busy}>
+        <button type="submit" className="btn btn--primary" disabled={busy || pin.length !== 6}>
           Cambiar contraseña
         </button>
       </div>

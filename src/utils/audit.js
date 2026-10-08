@@ -43,6 +43,10 @@ export const ACTION_GROUPS = [
       'account.reactivate': 'Reactivó una cuenta de operador',
       'account.password_change': 'Cambió su contraseña',
       'account.totp_rotate': 'Rotó su código TOTP',
+      'account.pin_set': 'Creó su PIN',
+      'account.pin_change': 'Cambió su PIN',
+      'account.pin_reset': 'Restableció el PIN de una cuenta de operador',
+      'account.pin_failed': 'Se equivocó al confirmar con el PIN',
     },
   },
   {

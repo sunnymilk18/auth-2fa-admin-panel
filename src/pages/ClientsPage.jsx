@@ -8,6 +8,7 @@ import { ConfirmDialog } from '../components/ConfirmDialog';
 import { Pagination } from '../components/Pagination';
 import { useToast } from '../components/ToastProvider';
 import { api } from '../api';
+import { pinError } from '../utils/pin';
 
 const PAGE_SIZE = 25;
 
@@ -99,21 +100,27 @@ export function ClientsPage() {
       message: 'Su clave de API deja de funcionar al instante. Puedes reactivarlo cuando quieras.',
       confirmLabel: 'Desactivar',
       danger: true,
-      run: () => runToggleActive(client),
+      needsPin: true,
+      run: (pin) => runToggleActive(client, pin),
     });
   }
 
-  async function runToggleActive(client) {
-    setConfirming(null);
+  // Desactivar pide el PIN y el diálogo sigue abierto hasta que sale bien (un PIN
+  // incorrecto vuelve al diálogo); activar no lo pide y cierra de inmediato.
+  async function runToggleActive(client, pin) {
+    if (pin === undefined) setConfirming(null);
     setBusyID(client.id);
     setError('');
     try {
-      if (client.active) await api.deactivateClient(client.id);
+      if (client.active) await api.deactivateClient(client.id, pin);
       else await api.activateClient(client.id);
+      setConfirming(null);
       await load();
       flash(client.id);
       notify(`"${client.name}" ${client.active ? 'desactivado' : 'activado'}.`);
     } catch (err) {
+      if (pin !== undefined && pinError(err)) throw err;
+      setConfirming(null);
       setError(sentence(err.data?.error || `no se pudo ${client.active ? 'desactivar' : 'activar'} el cliente`));
       notify(`No se pudo ${client.active ? 'desactivar' : 'activar'} "${client.name}".`, { type: 'error' });
     } finally {
@@ -127,16 +134,19 @@ export function ClientsPage() {
       message: 'La clave anterior deja de funcionar al instante.',
       confirmLabel: 'Rotar clave',
       danger: true,
-      run: async () => {
-        setConfirming(null);
+      needsPin: true,
+      run: async (pin) => {
         setBusyID(client.id);
         setError('');
         try {
-          const res = await api.rotateClient(client.id);
+          const res = await api.rotateClient(client.id, pin);
+          setConfirming(null);
           setRevealedKey({ name: client.name, apiKey: res.api_key });
           flash(client.id);
           notify(`Clave de "${client.name}" rotada.`);
         } catch (err) {
+          if (pinError(err)) throw err;
+          setConfirming(null);
           setError(sentence(err.data?.error || err.message));
           notify(`No se pudo rotar la clave de "${client.name}".`, { type: 'error' });
         } finally {
@@ -269,6 +279,7 @@ export function ClientsPage() {
         message={confirming?.message}
         confirmLabel={confirming?.confirmLabel}
         danger={confirming?.danger}
+        needsPin={confirming?.needsPin}
         onConfirm={confirming?.run}
         onCancel={() => setConfirming(null)}
       />

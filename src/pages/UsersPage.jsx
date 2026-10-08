@@ -10,6 +10,7 @@ import { Pagination } from '../components/Pagination';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { useToast } from '../components/ToastProvider';
 import { api } from '../api';
+import { pinError } from '../utils/pin';
 
 const PAGE_SIZE = 25;
 
@@ -75,17 +76,22 @@ export function UsersPage() {
     setTimeout(() => setHighlightID(null), 2200);
   }
 
-  // Corre una acción sobre un usuario y refresca la página actual.
-  async function runAction(user, { call, success, failure }) {
-    setConfirming(null);
+  // Corre una acción sobre un usuario y refresca la página actual. Con `pin` (las
+  // acciones que lo piden) el diálogo sigue abierto hasta que sale bien: si el PIN
+  // es incorrecto el error vuelve al diálogo, que lo explica y deja reintentar.
+  async function runAction(user, { call, success, failure }, pin) {
+    if (pin === undefined) setConfirming(null);
     setBusyID(user.id);
     setError('');
     try {
-      await call(user.id);
+      await call(user.id, pin);
+      setConfirming(null);
       await load();
       flash(user.id);
       notify(success);
     } catch (err) {
+      if (pin !== undefined && pinError(err)) throw err;
+      setConfirming(null);
       setError(sentence(err.data?.error || failure));
       notify(failure, { type: 'error' });
     } finally {
@@ -94,14 +100,15 @@ export function UsersPage() {
   }
 
   // Pide confirmación (acciones que cortan acceso o borran algo) y luego
-  // corre la acción.
-  function confirmAction(user, { title, message, confirmLabel, danger = true, call, success, failure }) {
+  // corre la acción. `needsPin`: además pide el PIN de operador en el mismo cuadro.
+  function confirmAction(user, { title, message, confirmLabel, danger = true, needsPin = false, call, success, failure }) {
     setConfirming({
       title,
       message,
       confirmLabel,
       danger,
-      run: () => runAction(user, { call, success, failure }),
+      needsPin,
+      run: (pin) => runAction(user, { call, success, failure }, needsPin ? pin : undefined),
     });
   }
 
@@ -118,6 +125,7 @@ export function UsersPage() {
       title: `Banear a "${user.email}"`,
       message: 'Sus sesiones y dispositivos se cierran al instante y no podrá iniciar sesión hasta que lo desbanees.',
       confirmLabel: 'Banear',
+      needsPin: true,
       call: api.banUser,
       success: `"${user.email}" baneado.`,
       failure: `No se pudo banear a "${user.email}".`,
@@ -166,6 +174,7 @@ export function UsersPage() {
             message:
               'Deja de usar la app autenticadora y recibe el código por correo al iniciar sesión. Úsalo si perdió el teléfono.',
             confirmLabel: 'Desactivar TOTP',
+            needsPin: true,
             call: api.disableUserTotp,
             success: `TOTP de "${user.email}" desactivado.`,
             failure: `No se pudo desactivar el TOTP de "${user.email}".`,
@@ -181,6 +190,7 @@ export function UsersPage() {
             message:
               'Se borra su PIN actual y se cierran todas sus sesiones y dispositivos de confianza. Tendrá que definir un PIN nuevo.',
             confirmLabel: 'Resetear PIN',
+            needsPin: true,
             call: api.resetUserPin,
             success: `PIN de "${user.email}" reseteado.`,
             failure: `No se pudo resetear el PIN de "${user.email}".`,
@@ -316,6 +326,7 @@ export function UsersPage() {
         message={confirming?.message}
         confirmLabel={confirming?.confirmLabel}
         danger={confirming?.danger}
+        needsPin={confirming?.needsPin}
         onConfirm={confirming?.run}
         onCancel={() => setConfirming(null)}
       />

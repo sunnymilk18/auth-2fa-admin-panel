@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useLocation } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 
 // Ítems de navegación con su alcance: los de superadmin solo se muestran
@@ -61,7 +61,8 @@ function ApiStatus() {
 }
 
 export function AppShell({ children }) {
-  const { actor, role, logout } = useAuth();
+  const { actor, role, hasPin, logout } = useAuth();
+  const { pathname } = useLocation();
   const items = NAV_ITEMS.filter((item) => item.roles.includes(role));
   const mainRef = useRef(null);
 
@@ -109,7 +110,15 @@ export function AppShell({ children }) {
             Cerrar sesión
           </button>
         </header>
-        <main id="contenido" ref={mainRef} tabIndex={-1} className="shell-content">{children}</main>
+        <main id="contenido" ref={mainRef} tabIndex={-1} className="shell-content">
+          {/* En Mi cuenta el aviso va dentro de la propia página, junto a la fila del PIN. */}
+          {!hasPin && pathname !== '/account' && (
+            <p className="notice notice--pin" role="status">
+              Aún no tienes un PIN, y las acciones delicadas lo piden. <Link to="/account">Crea el tuyo en Mi cuenta</Link>.
+            </p>
+          )}
+          {children}
+        </main>
       </div>
     </div>
   );

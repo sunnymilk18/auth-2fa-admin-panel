@@ -30,6 +30,9 @@ const whenLabel = (iso) =>
     hour12: false,
   });
 
+// Intentos fallidos (inicio de sesión o PIN): se marcan en rojo en la lista.
+const FAILED_ACTIONS = new Set(['admin.login_failed', 'account.pin_failed']);
+
 const NO_FILTERS = { actor: '', action: '', from: '', to: '' };
 
 export function ActivityPage() {
@@ -162,7 +165,7 @@ export function ActivityPage() {
                       {e.actor_email === SHARED_TOKEN_ACTOR ? 'token compartido' : e.actor_email}
                     </td>
                     <td className="cell-title cell-wrap">
-                      <span className={`status-dot status-dot--${e.action === 'admin.login_failed' ? 'bad' : 'ok'}`} />
+                      <span className={`status-dot status-dot--${FAILED_ACTIONS.has(e.action) ? 'bad' : 'ok'}`} />
                       {actionLabel(e.action)}
                     </td>
                     <td className="cell-wrap" data-label="Objetivo">

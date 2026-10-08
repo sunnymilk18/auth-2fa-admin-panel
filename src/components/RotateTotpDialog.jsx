@@ -1,10 +1,13 @@
 import { useState } from 'react';
 import { Modal } from './Modal';
 import { PasswordField } from './PasswordField';
+import { PinField } from './PinField';
+import { PinRequired } from './PinRequired';
 import { QrCode } from './QrCode';
 import { OneTimeSecret } from './OneTimeSecret';
 import { api } from '../api';
 import { secretFrom } from '../utils/totp';
+import { pinError } from '../utils/pin';
 
 function sentence(text) {
   const t = text.trim();
@@ -12,23 +15,29 @@ function sentence(text) {
 }
 
 function messageFor(err) {
-  if (err.status === 429 && err.retryAfterSeconds) {
-    const minutes = Math.ceil(err.retryAfterSeconds / 60);
-    return `Demasiados intentos fallidos. Vuelve a intentar en ${minutes} minuto${minutes === 1 ? '' : 's'}.`;
-  }
-  return sentence(err.data?.error || err.message);
+  return pinError(err) || sentence(err.data?.error || err.message);
 }
 
 // Reemplaza el código TOTP de la propia cuenta, en dos pasos. Primero la
 // contraseña: el backend genera un secreto nuevo pero no lo activa. Después se
-// registra en la app autenticadora y se confirma con un código suyo; recién
-// ahí reemplaza al anterior. Si se cierra a mitad de camino, el secreto
-// pendiente caduca solo y el código actual sigue funcionando.
-export function RotateTotpDialog({ onClose, onDone }) {
+// registra en la app autenticadora y se confirma con un código suyo y el PIN;
+// recién ahí reemplaza al anterior. Si se cierra a mitad de camino, el secreto
+// pendiente caduca solo y el código actual sigue funcionando. Como el PIN se
+// pide al confirmar, una cuenta sin PIN lo crea antes de empezar.
+export function RotateTotpDialog(props) {
+  return (
+    <PinRequired onClose={props.onClose}>
+      <RotateTotpForm {...props} />
+    </PinRequired>
+  );
+}
+
+function RotateTotpForm({ onClose, onDone }) {
   const [step, setStep] = useState('password'); // 'password' | 'scan'
   const [password, setPassword] = useState('');
   const [otpauthURL, setOtpauthURL] = useState('');
   const [code, setCode] = useState('');
+  const [pin, setPin] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
 
@@ -53,9 +62,10 @@ export function RotateTotpDialog({ onClose, onDone }) {
     setBusy(true);
     setError('');
     try {
-      await api.confirmTotpRotation(code.trim());
+      await api.confirmTotpRotation(code.trim(), pin);
       await onDone();
     } catch (err) {
+      if (pinError(err)) setPin('');
       setError(
         err.status === 404
           ? 'La rotación venció. Cierra este cuadro y vuelve a empezar.'
@@ -134,6 +144,8 @@ export function RotateTotpDialog({ onClose, onDone }) {
         />
       </label>
 
+      <PinField value={pin} onChange={setPin} />
+
       {error && (
         <p id="rotate-totp-error" className="error" role="alert">
           {error}
@@ -144,7 +156,7 @@ export function RotateTotpDialog({ onClose, onDone }) {
         <button type="button" className="btn btn--ghost" disabled={busy} onClick={onClose}>
           Cancelar
         </button>
-        <button type="submit" className="btn btn--primary" disabled={busy || code.length !== 6}>
+        <button type="submit" className="btn btn--primary" disabled={busy || code.length !== 6 || pin.length !== 6}>
           Confirmar cambio
         </button>
       </div>

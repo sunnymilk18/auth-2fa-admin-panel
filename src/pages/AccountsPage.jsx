@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { AppShell } from '../components/AppShell';
 import { PageHeader } from '../components/PageHeader';
 import { PasswordField } from '../components/PasswordField';
+import { PinField } from '../components/PinField';
+import { SetPinDialog } from '../components/SetPinDialog';
 import { secretFrom } from '../utils/totp';
 import { EmptyState } from '../components/EmptyState';
 import { ListSkeleton } from '../components/ListSkeleton';
@@ -12,6 +14,7 @@ import { ReactivateDialog } from '../components/ReactivateDialog';
 import { useAuth } from '../auth/AuthContext';
 import { useToast } from '../components/ToastProvider';
 import { api } from '../api';
+import { pinError } from '../utils/pin';
 
 function sentence(text) {
   const t = text.trim();
@@ -19,7 +22,7 @@ function sentence(text) {
 }
 
 export function AccountsPage() {
-  const { actor } = useAuth();
+  const { actor, hasPin, refreshIdentity } = useAuth();
   const { notify } = useToast();
   const [accounts, setAccounts] = useState(null);
   const [error, setError] = useState('');
@@ -28,6 +31,7 @@ export function AccountsPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('');
+  const [pin, setPin] = useState('');
   const [busyID, setBusyID] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   // { email, role, otpauthURL } de la última cuenta creada — se muestra una sola vez.
@@ -60,20 +64,49 @@ export function AccountsPage() {
     setError('');
     setSubmitting(true);
     try {
-      const res = await api.createAccount({ email: email.trim(), password, role });
+      const res = await api.createAccount({ email: email.trim(), password, role }, pin);
       setCreated({ email: res.email, role: res.role, otpauthURL: res.otpauth_url });
       setEmail('');
       setPassword('');
       setRole('');
+      setPin('');
       setCreating(false);
       await load();
       flash(res.id);
       notify(`Cuenta de "${res.email}" creada.`);
     } catch (err) {
-      setError(sentence(err.data?.error || err.message));
+      const pinMessage = pinError(err);
+      if (pinMessage) setPin('');
+      setError(pinMessage || sentence(err.data?.error || err.message));
     } finally {
       setSubmitting(false);
     }
+  }
+
+  // Borra el PIN de otra cuenta: su dueña o dueño tiene que crear uno nuevo. No pide PIN.
+  function onResetPin(account) {
+    setConfirming({
+      title: `Restablecer el PIN de "${account.email}"`,
+      message:
+        'Se borra su PIN. Mientras no cree uno nuevo, no podrá hacer acciones que pidan confirmación. Su cuenta y sus sesiones siguen como están.',
+      confirmLabel: 'Restablecer PIN',
+      danger: false,
+      run: async () => {
+        setConfirming(null);
+        setBusyID(account.id);
+        setError('');
+        try {
+          await api.resetAccountPin(account.id);
+          flash(account.id);
+          notify(`PIN de "${account.email}" restablecido.`);
+        } catch (err) {
+          setError(sentence(err.data?.error || `no se pudo restablecer el PIN de "${account.email}"`));
+          notify(`No se pudo restablecer el PIN de "${account.email}".`, { type: 'error' });
+        } finally {
+          setBusyID(null);
+        }
+      },
+    });
   }
 
   function onRevoke(account) {
@@ -83,16 +116,19 @@ export function AccountsPage() {
         'La cuenta deja de funcionar y se cierran todas sus sesiones al instante. No se puede reactivar desde el panel.',
       confirmLabel: 'Revocar cuenta',
       danger: true,
-      run: async () => {
-        setConfirming(null);
+      needsPin: true,
+      run: async (pin) => {
         setBusyID(account.id);
         setError('');
         try {
-          await api.revokeAccount(account.id);
+          await api.revokeAccount(account.id, pin);
+          setConfirming(null);
           await load();
           flash(account.id);
           notify(`Cuenta de "${account.email}" revocada.`);
         } catch (err) {
+          if (pinError(err)) throw err;
+          setConfirming(null);
           setError(sentence(err.data?.error || `no se pudo revocar la cuenta de "${account.email}"`));
           notify(`No se pudo revocar la cuenta de "${account.email}".`, { type: 'error' });
         } finally {
@@ -114,7 +150,15 @@ export function AccountsPage() {
         </button>
       </PageHeader>
 
-      {creating && (
+      {creating && !hasPin && (
+        <SetPinDialog
+          intro="Crear una cuenta pide confirmar con tu PIN, y aún no tienes uno. Créalo y sigues con la cuenta."
+          onClose={() => setCreating(false)}
+          onDone={refreshIdentity}
+        />
+      )}
+
+      {creating && hasPin && (
         <form onSubmit={onCreate} className="form form--inline">
           <label>
             Correo
@@ -147,7 +191,8 @@ export function AccountsPage() {
               <option value="superadmin">superadmin</option>
             </select>
           </label>
-          <button type="submit" className="btn btn--primary" disabled={submitting}>
+          <PinField value={pin} onChange={setPin} />
+          <button type="submit" className="btn btn--primary" disabled={submitting || pin.length !== 6}>
             Crear cuenta
           </button>
         </form>
@@ -231,6 +276,16 @@ export function AccountsPage() {
                       {a.active && !isSelf && (
                         <button
                           type="button"
+                          className="btn btn--ghost"
+                          disabled={busyID === a.id}
+                          onClick={() => onResetPin(a)}
+                        >
+                          Restablecer PIN
+                        </button>
+                      )}
+                      {a.active && !isSelf && (
+                        <button
+                          type="button"
                           className="btn btn--ghost btn--quiet-danger"
                           disabled={busyID === a.id}
                           onClick={() => onRevoke(a)}
@@ -267,6 +322,7 @@ export function AccountsPage() {
         message={confirming?.message}
         confirmLabel={confirming?.confirmLabel}
         danger={confirming?.danger}
+        needsPin={confirming?.needsPin}
         onConfirm={confirming?.run}
         onCancel={() => setConfirming(null)}
       />
