@@ -11,6 +11,7 @@ export const NAV_ITEMS = [
   { label: 'Lista blanca', path: '/allowlist', roles: ['superadmin'] },
   { label: 'Cuentas', path: '/accounts', roles: ['superadmin'] },
   { label: 'Actividad', path: '/activity', roles: ['superadmin'] },
+  { label: 'Estadísticas', path: '/stats', roles: ['admin', 'superadmin'] },
 ];
 
 // Pie del menú: a qué API está conectado el panel y si responde (GET /health,

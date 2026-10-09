@@ -138,6 +138,14 @@ export const api = {
   // Un dato incorrecto responde 403 (no 401).
   setPin: (body) => request('/admin/auth/pin', { method: 'PUT', body }),
 
+  // Estadísticas de uso (admin y superadmin; lo de operadores solo llega a superadmin).
+  // `tz`: zona horaria IANA con la que el backend corta los días.
+  stats: ({ range = '7d', tz = '' } = {}) => {
+    const params = new URLSearchParams({ range });
+    if (tz) params.set('tz', tz);
+    return request(`/admin/stats?${params}`);
+  },
+
   // Registro de actividad (solo superadmin). `from`/`to` van en RFC 3339.
   listAudit: ({ page = 1, pageSize = 25, actor = '', action = '', from = '', to = '' } = {}) => {
     const params = new URLSearchParams({ page: String(page), page_size: String(pageSize) });

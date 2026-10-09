@@ -18,6 +18,7 @@ Este repositorio es únicamente el frontend; el backend vive en su propio repo.
 | Lista blanca | `/allowlist` | superadmin | IPs exentas de sanciones en toda la plataforma. |
 | Cuentas | `/accounts` | superadmin | Crear, reactivar y revocar cuentas de operadores. |
 | Actividad | `/activity` | superadmin | Registro de quién hizo qué, cuándo y desde qué IP, con filtros por operador, acción y fechas. |
+| Estadísticas | `/stats` | admin y superadmin | Usuarios nuevos por día, usuarios por tenant y, para superadmin, acciones de operadores por día y por tipo, en rangos de 7 y 30 días. Necesita `GET /admin/stats` en la API. |
 | Mi cuenta | `/account` | admin y superadmin | Cambiar la propia contraseña y rotar el propio código TOTP (en dos pasos, con QR). |
 
 Los permisos los aplica el backend (responde 403 si el rol no alcanza); el

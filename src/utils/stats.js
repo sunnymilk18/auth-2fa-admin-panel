@@ -1,0 +1,14 @@
+// Un día del backend viene como "AAAA-MM-DD" ya cortado en la zona horaria del operador.
+// Se arma con sus partes (no con `new Date("AAAA-MM-DD")`, que lo toma como UTC y puede
+// mostrar el día anterior) y se escribe corto: "02/10".
+export function dayLabel(day) {
+  const [y, m, d] = day.split('-').map(Number);
+  return new Date(y, m - 1, d).toLocaleDateString('es', { day: '2-digit', month: '2-digit' });
+}
+
+export const fmt = (n) => n.toLocaleString('es', { useGrouping: 'always' });
+
+export const RANGES = [
+  { value: '7d', label: '7 días', days: 7 },
+  { value: '30d', label: '30 días', days: 30 },
+];

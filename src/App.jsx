@@ -10,6 +10,7 @@ import { BlacklistPage } from './pages/BlacklistPage';
 import { AllowlistPage } from './pages/AllowlistPage';
 import { AccountsPage } from './pages/AccountsPage';
 import { ActivityPage } from './pages/ActivityPage';
+import { StatsPage } from './pages/StatsPage';
 import { MyAccountPage } from './pages/MyAccountPage';
 
 export default function App() {
@@ -72,6 +73,14 @@ export default function App() {
               element={
                 <ProtectedRoute roles={['superadmin']}>
                   <ActivityPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/stats"
+              element={
+                <ProtectedRoute roles={['admin', 'superadmin']}>
+                  <StatsPage />
                 </ProtectedRoute>
               }
             />
