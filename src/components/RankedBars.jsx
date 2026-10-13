@@ -3,14 +3,15 @@ import { fmt } from '../utils/stats';
 // Lista ordenada con una barra por fila: sirve para "quién tiene más". `items`:
 // [{ key, label, value, extra? }], ya ordenados de mayor a menor. La barra más larga
 // es el primer valor; las demás se miden contra él. `extra` es una segunda línea tenue
-// bajo el nombre (p. ej. "+31 nuevos").
-export function RankedBars({ items }) {
+// bajo el nombre (p. ej. "+31 nuevos"). `mono` escribe el nombre en letra monoespaciada
+// (una IP). `tone="danger"` pinta las barras en la familia de rojos.
+export function RankedBars({ items, tone }) {
   const max = Math.max(1, ...items.map((i) => i.value));
   return (
-    <ul className="rank">
+    <ul className={`rank${tone === 'danger' ? ' rank--danger' : ''}`}>
       {items.map((item) => (
         <li key={item.key} className="rank-row">
-          <span className="rank-label" title={item.label}>
+          <span className={`rank-label${item.mono ? ' rank-label--mono' : ''}`} title={item.label}>
             {item.label}
             {item.extra && <span className="rank-extra">{item.extra}</span>}
           </span>

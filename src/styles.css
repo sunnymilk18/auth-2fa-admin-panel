@@ -2089,6 +2089,14 @@ a.stat:hover .stat-chevron {
   font-size: 14px;
 }
 
+.stat-note--foot {
+  margin-top: 14px;
+  font-size: 13px;
+}
+.stat-note--foot a {
+  color: var(--admin-text);
+}
+
 /* Gráfico de barras por día. El SVG se estira a lo ancho (preserveAspectRatio none): solo
    lleva rectángulos, así que no se deforma nada; los textos van en HTML. */
 .chart {
@@ -2141,6 +2149,13 @@ a.stat:hover .stat-chevron {
   fill: var(--admin-text);
 }
 .chart-slot:hover .chart-bar--failed {
+  fill: var(--danger-text);
+}
+/* Gráfico entero en rojo (baneos): son malos por sí mismos, no una parte fallida del total. */
+.chart--danger .chart-bar {
+  fill: var(--danger);
+}
+.chart--danger .chart-slot:hover .chart-bar {
   fill: var(--danger-text);
 }
 .chart-axis {
@@ -2202,6 +2217,13 @@ a.stat:hover .stat-chevron {
   height: 100%;
   border-radius: 4px;
   background: var(--admin);
+}
+.rank--danger .rank-fill {
+  background: var(--danger);
+}
+.rank-label--mono {
+  font-family: var(--font-mono);
+  font-size: 13px;
 }
 .rank-value {
   font-family: var(--font-mono);

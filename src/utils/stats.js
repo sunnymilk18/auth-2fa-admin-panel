@@ -6,7 +6,12 @@ export function dayLabel(day) {
   return new Date(y, m - 1, d).toLocaleDateString('es', { day: '2-digit', month: '2-digit' });
 }
 
-export const fmt = (n) => n.toLocaleString('es', { useGrouping: 'always' });
+// Una marca de tiempo ISO 8601 del backend, en la hora local del operador: "12/10, 14:35".
+export function timeLabel(iso) {
+  return new Date(iso).toLocaleString('es', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+}
+
+export const fmt =(n) => n.toLocaleString('es', { useGrouping: 'always' });
 
 export const RANGES = [
   { value: '7d', label: '7 días', days: 7 },

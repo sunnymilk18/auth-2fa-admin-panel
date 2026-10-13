@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { AppShell } from '../components/AppShell';
 import { PageHeader } from '../components/PageHeader';
 import { EmptyState } from '../components/EmptyState';
@@ -9,7 +10,7 @@ import { RankedBars } from '../components/RankedBars';
 import { useAuth } from '../auth/AuthContext';
 import { api } from '../api';
 import { actionLabel } from '../utils/audit';
-import { RANGES, fmt } from '../utils/stats';
+import { RANGES, fmt, timeLabel } from '../utils/stats';
 
 function sentence(text) {
   const t = text.trim();
@@ -31,8 +32,15 @@ function Block({ id, title, total, children }) {
   );
 }
 
-// Estadísticas de uso: lo que el backend ya sabe contar (usuarios, tenants y, para
-// superadmin, la actividad de los operadores). Cada bloque se dibuja solo si el backend
+// Nombre de un tenant en las listas de accesos: los intentos que no se pudieron atribuir a
+// ninguno llegan sin id ni nombre.
+function tenantName(t) {
+  if (t.name) return t.name;
+  return t.api_client_id ? `${t.api_client_id.slice(0, 8)}…` : 'Sin tenant identificado';
+}
+
+// Estadísticas de uso: lo que el backend ya sabe contar (usuarios, tenants, accesos de los
+// usuarios y, para superadmin, la actividad de los operadores). Cada bloque se dibuja solo si el backend
 // lo manda: los que el rol no puede ver, o los que todavía no existen, simplemente faltan.
 export function StatsPage() {
   const { role } = useAuth();
@@ -65,7 +73,13 @@ export function StatsPage() {
   const days = RANGES.find((r) => r.value === range).days;
   const usersPerDay = data?.users_per_day;
   const operatorDays = data?.operator_actions_per_day;
+  const loginDays = data?.logins_by_day;
   const isSuper = role === 'superadmin';
+
+  // El gráfico de accesos suma correctos y fallidos en cada barra; los fallidos se pintan aparte.
+  const loginBars = loginDays?.map((d) => ({ day: d.day, count: d.success + d.failed, failed: d.failed }));
+  const loginsOk = loginDays ? sum(loginDays, 'success') : 0;
+  const loginsFailed = loginDays ? sum(loginDays, 'failed') : 0;
 
   const strip = data
     ? [
@@ -73,6 +87,12 @@ export function StatsPage() {
         { key: 'banned', label: 'Usuarios baneados', value: data.users_banned, hint: 'ahora' },
         ...(usersPerDay
           ? [{ key: 'new', label: `Nuevos en ${days} días`, value: sum(usersPerDay), hint: 'usuarios registrados' }]
+          : []),
+        ...(loginDays
+          ? [
+              { key: 'logins-ok', label: `Accesos en ${days} días`, value: loginsOk, hint: 'inicios de sesión correctos' },
+              { key: 'logins-failed', label: 'Accesos fallidos', value: loginsFailed, hint: `en ${days} días` },
+            ]
           : []),
         ...(operatorDays
           ? [
@@ -92,7 +112,7 @@ export function StatsPage() {
     <AppShell>
       <PageHeader
         title="Estadísticas"
-        description="Cómo se usa la API: usuarios nuevos, usuarios por tenant y, para superadmin, la actividad de los operadores."
+        description="Cómo se usa la API: usuarios, accesos de los usuarios y, para superadmin, la actividad de los operadores."
       >
         <div className="seg" role="group" aria-label="Rango de días">
           {RANGES.map((r) => (
@@ -136,6 +156,79 @@ export function StatsPage() {
                     }))}
                   />
                 )}
+              </Block>
+            )}
+
+            {loginBars && (
+              <Block
+                id="stats-logins-day"
+                title="Inicios de sesión por día"
+                total={`${fmt(loginsOk)} correctos, ${fmt(loginsFailed)} fallidos`}
+              >
+                <BarChart
+                  data={loginBars}
+                  unit={['inicio de sesión', 'inicios de sesión']}
+                  okLabel="correctos"
+                  failedUnit="fallidos"
+                  title="Inicios de sesión de usuarios por día"
+                />
+                <p className="chart-legend">
+                  <span className="chart-swatch" aria-hidden="true" /> Correctos
+                  <span className="chart-swatch chart-swatch--failed" aria-hidden="true" /> Fallidos
+                </p>
+              </Block>
+            )}
+
+            {data.failures_by_tenant && (
+              <Block id="stats-fail-tenants" title="Fallos de acceso por tenant">
+                {data.failures_by_tenant.length === 0 ? (
+                  <p className="stat-empty">No hubo inicios de sesión en este rango.</p>
+                ) : (
+                  <RankedBars
+                    tone="danger"
+                    items={data.failures_by_tenant.map((t) => ({
+                      key: t.api_client_id || 'none',
+                      label: tenantName(t),
+                      value: t.failed,
+                      extra: `${fmt(t.success)} ${t.success === 1 ? 'correcto' : 'correctos'}`,
+                    }))}
+                  />
+                )}
+              </Block>
+            )}
+
+            {data.top_failing_ips && (
+              <Block id="stats-fail-ips" title="IPs con más fallos">
+                {data.top_failing_ips.length === 0 ? (
+                  <p className="stat-empty">Ninguna IP acumuló fallos en este rango.</p>
+                ) : (
+                  <>
+                    <RankedBars
+                      tone="danger"
+                      items={data.top_failing_ips.map((ip) => ({
+                        key: ip.ip,
+                        label: ip.ip,
+                        mono: true,
+                        value: ip.failed,
+                        extra: `último ${timeLabel(ip.last_at)}`,
+                      }))}
+                    />
+                    <p className="stat-note stat-note--foot">
+                      Las IPs que superan el límite se banean solas. <Link to="/blacklist">Ver lista negra</Link>
+                    </p>
+                  </>
+                )}
+              </Block>
+            )}
+
+            {data.bans_by_day && (
+              <Block id="stats-bans-day" title="Baneos automáticos por día" total={`${fmt(sum(data.bans_by_day, 'bans'))} en total`}>
+                <BarChart
+                  data={data.bans_by_day.map((d) => ({ day: d.day, count: d.bans }))}
+                  unit={['baneo', 'baneos']}
+                  tone="danger"
+                  title="Baneos automáticos de IP por día"
+                />
               </Block>
             )}
 
