@@ -10,7 +10,7 @@ import { RankedBars } from '../components/RankedBars';
 import { useAuth } from '../auth/AuthContext';
 import { api } from '../api';
 import { actionLabel } from '../utils/audit';
-import { RANGES, fmt, timeLabel } from '../utils/stats';
+import { RANGES, fmt, localDay, timeLabel } from '../utils/stats';
 
 function sentence(text) {
   const t = text.trim();
@@ -75,6 +75,8 @@ export function StatsPage() {
   const operatorDays = data?.operator_actions_per_day;
   const loginDays = data?.logins_by_day;
   const isSuper = role === 'superadmin';
+  // Los enlaces a Accesos abren la lista con el mismo tramo de días que se está viendo aquí.
+  const accessLink = (extra) => `/access?${new URLSearchParams({ ...extra, from: localDay(days - 1) })}`;
 
   // El gráfico de accesos suma correctos y fallidos en cada barra; los fallidos se pintan aparte.
   const loginBars = loginDays?.map((d) => ({ day: d.day, count: d.success + d.failed, failed: d.failed }));
@@ -191,6 +193,8 @@ export function StatsPage() {
                       label: tenantName(t),
                       value: t.failed,
                       extra: `${fmt(t.success)} ${t.success === 1 ? 'correcto' : 'correctos'}`,
+                      to: t.api_client_id ? accessLink({ tenant: t.api_client_id }) : undefined,
+                      linkTitle: 'Ver los accesos de este tenant',
                     }))}
                   />
                 )}
@@ -211,6 +215,8 @@ export function StatsPage() {
                         mono: true,
                         value: ip.failed,
                         extra: `último ${timeLabel(ip.last_at)}`,
+                        to: accessLink({ ip: ip.ip }),
+                        linkTitle: 'Ver los intentos de esta IP',
                       }))}
                     />
                     <p className="stat-note stat-note--foot">

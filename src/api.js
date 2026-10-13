@@ -146,6 +146,19 @@ export const api = {
     return request(`/admin/stats?${params}`);
   },
 
+  // Detalle de los intentos de acceso de usuarios finales (tabla auth_events del backend).
+  // `from`/`to` van en ISO 8601; sin ellos el backend muestra los últimos 7 días (máximo 90).
+  listSecurityEvents: ({ page = 1, pageSize = 50, tenant = '', kind = '', result = '', ip = '', from = '', to = '' } = {}) => {
+    const params = new URLSearchParams({ page: String(page), page_size: String(pageSize) });
+    if (tenant) params.set('tenant', tenant);
+    if (kind) params.set('kind', kind);
+    if (result) params.set('result', result);
+    if (ip) params.set('ip', ip);
+    if (from) params.set('from', from);
+    if (to) params.set('to', to);
+    return request(`/admin/security/events?${params}`);
+  },
+
   // Registro de actividad (solo superadmin). `from`/`to` van en RFC 3339.
   listAudit: ({ page = 1, pageSize = 25, actor = '', action = '', from = '', to = '' } = {}) => {
     const params = new URLSearchParams({ page: String(page), page_size: String(pageSize) });

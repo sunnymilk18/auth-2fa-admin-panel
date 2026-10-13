@@ -11,6 +11,7 @@ import { AllowlistPage } from './pages/AllowlistPage';
 import { AccountsPage } from './pages/AccountsPage';
 import { ActivityPage } from './pages/ActivityPage';
 import { StatsPage } from './pages/StatsPage';
+import { AccessPage } from './pages/AccessPage';
 import { MyAccountPage } from './pages/MyAccountPage';
 
 export default function App() {
@@ -81,6 +82,14 @@ export default function App() {
               element={
                 <ProtectedRoute roles={['admin', 'superadmin']}>
                   <StatsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/access"
+              element={
+                <ProtectedRoute roles={['admin', 'superadmin']}>
+                  <AccessPage />
                 </ProtectedRoute>
               }
             />

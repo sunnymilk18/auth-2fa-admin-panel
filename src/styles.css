@@ -1324,6 +1324,10 @@ h1[tabindex='-1']:focus {
   padding: 8px 10px;
   min-width: 0;
 }
+/* Seis filtros (Accesos): más angostos para que quepan en una sola fila en pantalla ancha. */
+.form--filters-six label {
+  flex-basis: 136px;
+}
 /* Campo del PIN: seis dígitos en mono y espaciados, para contarlos de un vistazo. */
 .password-field input.pin-input {
   font-family: var(--font-mono);
@@ -2095,6 +2099,61 @@ a.stat:hover .stat-chevron {
 }
 .stat-note--foot a {
   color: var(--admin-text);
+}
+/* Aviso bajo los filtros de una lista (p. ej. "Mostrando los últimos 7 días"). */
+.stat-note--list {
+  margin-bottom: 14px;
+  font-size: 13px;
+}
+
+/* Accesos: dato secundario bajo el evento (el agente de usuario, cortado con puntos). */
+.data-table td .cell-sub {
+  display: block;
+  max-width: 260px;
+  overflow: hidden;
+  color: var(--text-dim);
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* Una IP que filtra la lista al pulsarla: se ve como enlace (subrayada), no como texto suelto. */
+.ip-link {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--admin-text);
+  font: inherit;
+  text-decoration: underline;
+  text-decoration-color: var(--control-border);
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.ip-link:hover {
+  text-decoration-color: currentColor;
+}
+.ip-link:focus-visible {
+  outline: 2px solid var(--admin);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+.field-hint {
+  display: block;
+  margin-top: 4px;
+  color: var(--text-dim);
+  font-size: 12px;
+}
+.field-hint--error {
+  color: var(--danger-text);
+}
+/* Nombre de una fila de lista con barras que lleva a otra pantalla. */
+.rank-link {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: var(--control-border);
+  text-underline-offset: 3px;
+}
+.rank-link:hover {
+  text-decoration-color: currentColor;
 }
 
 /* Gráfico de barras por día. El SVG se estira a lo ancho (preserveAspectRatio none): solo
