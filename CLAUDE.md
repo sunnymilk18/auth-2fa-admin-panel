@@ -104,6 +104,7 @@ backend, es en ese otro repo/chat — este repo es solo el frontend.
 - Un menú o popover que salga de una tabla se dibuja con un portal en `body`
   (ver `ActionMenu`): las celdas `sticky` crean su propio apilamiento y tapan
   cualquier cosa que viva dentro de ellas.
+- Pruebas automáticas: `npm test` (Vitest + Testing Library + jsdom, configurado en `vite.config.js`). Cada prueba vive junto a lo que prueba (`*.test.js` / `*.test.jsx`). Cubren las funciones de `src/utils` y los componentes `Modal`, `ConfirmDialog` (con y sin PIN) y `PasswordField`. jsdom no calcula el diseño: `getClientRects()` vuelve vacío, así que la prueba del Tab atrapado de `Modal` lo simula.
 - `.env` local: `VITE_API_URL=http://localhost:8080`.
 - Credenciales de prueba: hay un admin de prueba en la base local; sus datos
   están en `CLAUDE.local.md` (ignorado por git, no se sube al repo).
