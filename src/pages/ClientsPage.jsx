@@ -9,6 +9,7 @@ import { Pagination } from '../components/Pagination';
 import { useToast } from '../components/ToastProvider';
 import { api } from '../api';
 import { pinError } from '../utils/pin';
+import { impactFor, IMPACTS, usersAffectedLine } from '../utils/impact';
 
 const PAGE_SIZE = 25;
 
@@ -20,6 +21,9 @@ function sentence(text) {
 export function ClientsPage() {
   const { notify } = useToast();
   const [clients, setClients] = useState(null);
+  // Usuarios por tenant (de Estadísticas), para mostrar cuántos usuarios afecta desactivar un sistema.
+  // null mientras no llega o si no se pudo pedir: la vista previa entonces no menciona el número.
+  const [userCounts, setUserCounts] = useState(null);
   const [error, setError] = useState('');
 
   // El backend devuelve todos los clientes de una vez (no pagina ni filtra), así
@@ -51,6 +55,10 @@ export function ClientsPage() {
 
   useEffect(() => {
     load();
+    api
+      .stats({ range: '30d' })
+      .then((res) => setUserCounts(Object.fromEntries((res.users_per_tenant || []).map((t) => [t.api_client_id, t.total]))))
+      .catch(() => {});
   }, []);
 
   function flash(id) {
@@ -97,7 +105,10 @@ export function ClientsPage() {
     }
     setConfirming({
       title: `Desactivar "${client.name}"`,
-      message: 'Su clave de API deja de funcionar al instante. Puedes reactivarlo cuando quieras.',
+      message: 'El sistema deja de poder usar la API hasta que lo reactives.',
+      impact: impactFor('deactivateClient', {
+        extraChanges: [usersAffectedLine(userCounts ? userCounts[client.id] ?? 0 : undefined)].filter(Boolean),
+      }),
       confirmLabel: 'Desactivar',
       danger: true,
       needsPin: true,
@@ -111,13 +122,17 @@ export function ClientsPage() {
     if (pin === undefined) setConfirming(null);
     setBusyID(client.id);
     setError('');
+    const wasActive = client.active;
     try {
-      if (client.active) await api.deactivateClient(client.id, pin);
+      if (wasActive) await api.deactivateClient(client.id, pin);
       else await api.activateClient(client.id);
       setConfirming(null);
       await load();
       flash(client.id);
-      notify(`"${client.name}" ${client.active ? 'desactivado' : 'activado'}.`);
+      notify(
+        `"${client.name}" ${wasActive ? 'desactivado' : 'activado'}.`,
+        wasActive ? { action: { label: 'Deshacer', onClick: () => undoDeactivate(client) } } : undefined
+      );
     } catch (err) {
       if (pin !== undefined && pinError(err)) throw err;
       setConfirming(null);
@@ -128,10 +143,28 @@ export function ClientsPage() {
     }
   }
 
+  // "Deshacer" tras desactivar: vuelve a activar el sistema (no pide PIN).
+  async function undoDeactivate(client) {
+    setBusyID(client.id);
+    setError('');
+    try {
+      await api.activateClient(client.id);
+      await load();
+      flash(client.id);
+      notify(`"${client.name}" activado.`);
+    } catch (err) {
+      setError(sentence(err.data?.error || 'no se pudo activar el cliente'));
+      notify(`No se pudo activar "${client.name}".`, { type: 'error' });
+    } finally {
+      setBusyID(null);
+    }
+  }
+
   function onRotate(client) {
     setConfirming({
       title: `Rotar la clave de API de "${client.name}"`,
-      message: 'La clave anterior deja de funcionar al instante.',
+      message: 'Se emite una clave nueva y la anterior deja de servir.',
+      impact: IMPACTS.rotateClientKey,
       confirmLabel: 'Rotar clave',
       danger: true,
       needsPin: true,
@@ -280,6 +313,7 @@ export function ClientsPage() {
         confirmLabel={confirming?.confirmLabel}
         danger={confirming?.danger}
         needsPin={confirming?.needsPin}
+        impact={confirming?.impact}
         onConfirm={confirming?.run}
         onCancel={() => setConfirming(null)}
       />

@@ -14,6 +14,7 @@ import { ReactivateDialog } from '../components/ReactivateDialog';
 import { useAuth } from '../auth/AuthContext';
 import { useToast } from '../components/ToastProvider';
 import { api } from '../api';
+import { IMPACTS } from '../utils/impact';
 import { pinError } from '../utils/pin';
 
 function sentence(text) {
@@ -112,8 +113,8 @@ export function AccountsPage() {
   function onRevoke(account) {
     setConfirming({
       title: `Revocar la cuenta de "${account.email}"`,
-      message:
-        'La cuenta deja de funcionar y se cierran todas sus sesiones al instante. No se puede reactivar desde el panel.',
+      message: 'Úsalo cuando una cuenta de operador ya no debe tener acceso.',
+      impact: IMPACTS.revokeAccount,
       confirmLabel: 'Revocar cuenta',
       danger: true,
       needsPin: true,
@@ -323,6 +324,7 @@ export function AccountsPage() {
         confirmLabel={confirming?.confirmLabel}
         danger={confirming?.danger}
         needsPin={confirming?.needsPin}
+        impact={confirming?.impact}
         onConfirm={confirming?.run}
         onCancel={() => setConfirming(null)}
       />

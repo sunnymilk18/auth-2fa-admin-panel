@@ -6,6 +6,7 @@ import { ListSkeleton } from '../components/ListSkeleton';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { useToast } from '../components/ToastProvider';
 import { api } from '../api';
+import { IMPACTS } from '../utils/impact';
 import { pinError } from '../utils/pin';
 import { isValidIP } from '../utils/ip';
 
@@ -71,8 +72,8 @@ export function AllowlistPage() {
     setError('');
     setConfirming({
       title: `Agregar "${ip}" a la lista blanca`,
-      message:
-        'Esta IP nunca más se sancionará ni se baneará, en ningún tenant de la plataforma. Si hoy tiene un baneo activo, también se levanta.',
+      message: 'La exención vale para toda la plataforma.',
+      impact: IMPACTS.allowlistAdd,
       confirmLabel: 'Agregar a la lista blanca',
       danger: true,
       needsPin: true,
@@ -93,7 +94,8 @@ export function AllowlistPage() {
   function onRemove(ip) {
     setConfirming({
       title: `Quitar "${ip}" de la lista blanca`,
-      message: 'La IP vuelve a poder recibir sanciones y baneos en todos los tenants.',
+      message: 'Se quita la exención de esta IP.',
+      impact: IMPACTS.allowlistRemove,
       confirmLabel: 'Quitar de la lista blanca',
       danger: true,
       needsPin: true,
@@ -171,6 +173,7 @@ export function AllowlistPage() {
         confirmLabel={confirming?.confirmLabel}
         danger={confirming?.danger}
         needsPin={confirming?.needsPin}
+        impact={confirming?.impact}
         onConfirm={confirming?.run}
         onCancel={() => setConfirming(null)}
       />

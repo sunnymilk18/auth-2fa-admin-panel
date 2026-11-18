@@ -2464,3 +2464,75 @@ a.stat:hover .stat-chevron {
   white-space: normal;
   overflow-wrap: normal;
 }
+
+/* --- Vista previa de impacto en los diálogos de confirmación ------------- */
+.impact {
+  margin: 16px 0 4px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--field-bg);
+  font-size: 14px;
+}
+.impact-title {
+  margin: 0 0 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-dim);
+}
+.impact-title:not(:first-child) {
+  margin-top: 12px;
+}
+.impact-list {
+  margin: 0;
+  padding-left: 18px;
+}
+.impact-list li {
+  margin: 3px 0;
+}
+.impact-list--stays {
+  color: var(--text-dim);
+}
+.impact-undo {
+  margin: 12px 0 0;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+.impact-undo--button strong {
+  color: var(--admin-text);
+}
+.impact-undo--none strong {
+  color: var(--danger-text);
+}
+.impact-undo--manual strong {
+  color: var(--superadmin);
+}
+
+/* Aviso con acción ("Deshacer"). */
+.toast--with-action {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.toast-message {
+  flex: 1;
+}
+.toast-action {
+  flex: none;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border: 1px solid var(--admin-border);
+  border-radius: var(--radius);
+  background: var(--admin-tint);
+  color: var(--admin-text);
+  cursor: pointer;
+}
+.toast-action:hover {
+  background: var(--admin-tint-hover);
+}
+.toast-action:focus-visible {
+  outline: 2px solid var(--admin);
+  outline-offset: 2px;
+}

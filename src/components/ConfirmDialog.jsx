@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Modal } from './Modal';
 import { PinField } from './PinField';
 import { SetPinDialog } from './SetPinDialog';
+import { ImpactPreview } from './ImpactPreview';
 import { useAuth } from '../auth/AuthContext';
 import { pinError } from '../utils/pin';
 
@@ -15,6 +16,9 @@ import { pinError } from '../utils/pin';
 // cuadro y `onConfirm(pin)` recibe el PIN. Si el PIN es incorrecto, `onConfirm`
 // debe volver a lanzar ese error: el cuadro sigue abierto y lo explica. Si la
 // cuenta aún no tiene PIN, primero se ofrece crearlo.
+//
+// `impact`: vista previa de la acción (qué cambia, qué no y si se puede deshacer), de
+// src/utils/impact.js. Va debajo del mensaje y antes de pedir el PIN.
 export function ConfirmDialog({ open, needsPin, ...props }) {
   const { hasPin, refreshIdentity } = useAuth();
   if (!open) return null;
@@ -30,11 +34,12 @@ export function ConfirmDialog({ open, needsPin, ...props }) {
   return needsPin ? <PinConfirm {...props} /> : <PlainConfirm {...props} />;
 }
 
-function PlainConfirm({ title, message, confirmLabel = 'Confirmar', danger, onConfirm, onCancel }) {
+function PlainConfirm({ title, message, impact, confirmLabel = 'Confirmar', danger, onConfirm, onCancel }) {
   return (
     <Modal role="alertdialog" labelledBy="dialog-title" describedBy="dialog-message" onClose={onCancel}>
       <h3 id="dialog-title">{title}</h3>
       <p id="dialog-message">{message}</p>
+      <ImpactPreview impact={impact} />
       <div className="dialog-actions">
         <button type="button" className="btn btn--ghost" data-autofocus={danger ? '' : undefined} onClick={onCancel}>
           Cancelar
@@ -54,7 +59,7 @@ function PlainConfirm({ title, message, confirmLabel = 'Confirmar', danger, onCo
 
 // Con el campo del PIN el foco empieza en el campo, que es lo primero que hay que
 // hacer; "Cancelar" queda a un Tab y un Enter apresurado no confirma nada sin PIN.
-function PinConfirm({ title, message, confirmLabel = 'Confirmar', danger, onConfirm, onCancel }) {
+function PinConfirm({ title, message, impact, confirmLabel = 'Confirmar', danger, onConfirm, onCancel }) {
   const [pin, setPin] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
@@ -85,6 +90,7 @@ function PinConfirm({ title, message, confirmLabel = 'Confirmar', danger, onConf
     >
       <h3 id="dialog-title">{title}</h3>
       <p id="dialog-message">{message}</p>
+      <ImpactPreview impact={impact} />
 
       <PinField
         autoFocus
