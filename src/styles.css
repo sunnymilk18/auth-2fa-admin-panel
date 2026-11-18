@@ -2312,3 +2312,155 @@ a.stat:hover .stat-chevron {
     grid-row: 2;
   }
 }
+
+/* --- Alertas ------------------------------------------------------------ */
+.alert-cell-motive {
+  min-width: 220px;
+}
+.alert-dialog {
+  max-width: 560px;
+}
+.dialog .alert-subject-sub {
+  display: block;
+  margin-top: 2px;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  color: var(--text-dim);
+}
+.alert-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  margin: 0 0 4px;
+  font-size: 14px;
+}
+.alert-meta-item {
+  display: inline-flex;
+  align-items: center;
+}
+.alert-section {
+  margin: 20px 0 8px;
+  font-size: 15px;
+  font-weight: 600;
+}
+.alert-hint {
+  margin: 0 0 8px;
+  color: var(--text-dim);
+  font-size: 14px;
+}
+.alert-hint-inline {
+  color: var(--text-dim);
+  font-size: 13px;
+}
+.alert-motives {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--border);
+}
+.alert-motives li {
+  padding: 9px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 15px;
+}
+.alert-score-line {
+  margin: 10px 0 0;
+  font-size: 14px;
+}
+.alert-features {
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border-top: 1px solid var(--border);
+}
+.alert-features > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+.alert-features > div:nth-child(odd) {
+  padding-right: 16px;
+}
+.alert-features > div:nth-child(even) {
+  padding-left: 16px;
+  border-left: 1px solid var(--border);
+}
+.alert-features dt {
+  color: var(--text-dim);
+}
+.alert-features dd {
+  margin: 0;
+  color: var(--text-dim);
+}
+/* Lo que la ventana trae por encima de cero se destaca; lo demás queda en segundo plano. */
+.alert-features .is-hit dd {
+  color: var(--text);
+  font-weight: 600;
+}
+.alert-closure p {
+  margin: 0 0 6px;
+  font-size: 14px;
+}
+.alert-note {
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--field-bg);
+  overflow-wrap: anywhere;
+}
+.alert-note-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-dim);
+}
+.alert-note-field textarea {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  padding: 10px 12px;
+  border: 1px solid var(--field-border);
+  border-radius: var(--radius);
+  background: var(--field-bg);
+  color: var(--text);
+  resize: vertical;
+  min-height: 72px;
+}
+.alert-note-field textarea::placeholder {
+  color: #8a93a5;
+}
+.alert-note-field textarea:hover:not(:focus-visible) {
+  border-color: var(--control-border-hover);
+}
+.alert-note-field textarea:focus-visible {
+  outline: none;
+  border-color: var(--admin);
+  box-shadow: 0 0 0 3px var(--admin-soft);
+}
+@media (max-width: 520px) {
+  .alert-features {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .alert-features > div:nth-child(even) {
+    padding-left: 0;
+    border-left: 0;
+  }
+  .alert-features > div:nth-child(odd) {
+    padding-right: 0;
+  }
+}
+/* Una IP no se parte en dos líneas. */
+.alert-ip {
+  white-space: nowrap;
+}
+/* La fuente se parte entre palabras ("Isolation / Forest"), nunca dentro de una. */
+.data-table td.alert-cell-source {
+  white-space: normal;
+  overflow-wrap: normal;
+}

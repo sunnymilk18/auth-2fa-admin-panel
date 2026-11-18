@@ -159,6 +159,25 @@ export const api = {
     return request(`/admin/security/events?${params}`);
   },
 
+  // Alertas del detector de accesos anómalos (admin y superadmin). `from`/`to` son fechas
+  // AAAA-MM-DD en UTC y filtran por el inicio de la ventana de la alerta; sin ellas el backend
+  // muestra los últimos 7 días (máximo 90). `state`: abierta | descartada | resuelta.
+  // Devuelve { items, total, page, page_size }.
+  listAlerts: ({ page = 1, pageSize = 50, state = '', tenant = '', from = '', to = '' } = {}) => {
+    const params = new URLSearchParams({ page: String(page), page_size: String(pageSize) });
+    if (state) params.set('state', state);
+    if (tenant) params.set('tenant', tenant);
+    if (from) params.set('from', from);
+    if (to) params.set('to', to);
+    return request(`/admin/alerts?${params}`);
+  },
+  // Cerrar una alerta no pide PIN (no quita acceso a nadie). La nota es opcional (hasta 1.000
+  // caracteres). Devuelve la alerta ya cerrada; 409 si ya no estaba abierta.
+  dismissAlert: (id, note) =>
+    request(`/admin/alerts/${encodeURIComponent(id)}/dismiss`, { method: 'POST', body: note ? { note } : undefined }),
+  resolveAlert: (id, note) =>
+    request(`/admin/alerts/${encodeURIComponent(id)}/resolve`, { method: 'POST', body: note ? { note } : undefined }),
+
   // Registro de actividad (solo superadmin). `from`/`to` van en RFC 3339.
   listAudit: ({ page = 1, pageSize = 25, actor = '', action = '', from = '', to = '' } = {}) => {
     const params = new URLSearchParams({ page: String(page), page_size: String(pageSize) });

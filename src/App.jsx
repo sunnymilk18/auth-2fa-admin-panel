@@ -12,6 +12,7 @@ import { AccountsPage } from './pages/AccountsPage';
 import { ActivityPage } from './pages/ActivityPage';
 import { StatsPage } from './pages/StatsPage';
 import { AccessPage } from './pages/AccessPage';
+import { AlertsPage } from './pages/AlertsPage';
 import { MyAccountPage } from './pages/MyAccountPage';
 
 export default function App() {
@@ -90,6 +91,14 @@ export default function App() {
               element={
                 <ProtectedRoute roles={['admin', 'superadmin']}>
                   <AccessPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/alerts"
+              element={
+                <ProtectedRoute roles={['admin', 'superadmin']}>
+                  <AlertsPage />
                 </ProtectedRoute>
               }
             />

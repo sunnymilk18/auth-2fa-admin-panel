@@ -13,6 +13,7 @@ export const NAV_ITEMS = [
   { label: 'Actividad', path: '/activity', roles: ['superadmin'] },
   { label: 'Estadísticas', path: '/stats', roles: ['admin', 'superadmin'] },
   { label: 'Accesos', path: '/access', roles: ['admin', 'superadmin'] },
+  { label: 'Alertas', path: '/alerts', roles: ['admin', 'superadmin'] },
 ];
 
 // Pie del menú: a qué API está conectado el panel y si responde (GET /health,
