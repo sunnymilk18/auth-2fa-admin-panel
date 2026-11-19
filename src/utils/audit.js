@@ -36,6 +36,13 @@ export const ACTION_GROUPS = [
     },
   },
   {
+    label: 'Alertas',
+    actions: {
+      alert_dismissed: 'Descartó una alerta',
+      alert_resolved: 'Marcó una alerta como resuelta',
+    },
+  },
+  {
     label: 'Cuentas de operadores',
     actions: {
       'account.create': 'Creó una cuenta de operador',
@@ -68,6 +75,7 @@ const TARGET_LABELS = {
   blacklist_ip: 'IP baneada',
   allowlist_ip: 'IP exenta',
   admin_account: 'Cuenta de operador',
+  alert: 'Alerta',
 };
 
 export const targetTypeLabel = (type) => TARGET_LABELS[type] || type;
